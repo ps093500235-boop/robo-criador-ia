@@ -350,6 +350,20 @@
       .net-line{margin:10px 0 0;font-weight:700;color:var(--cyan);font-size:15.5px}
       @media (max-width:760px){.social-grid{grid-template-columns:1fr 1fr}.social-btn{padding:14px}}
 
+      /* ---------- Criar imagem ---------- */
+      .img-panel{border-color:rgba(168,85,247,.55);box-shadow:0 0 22px rgba(168,85,247,.20)}
+      .img-panel h2{color:#d8b4fe}
+      .img-panel .tone-btn.sel{border-color:var(--purple);background:linear-gradient(90deg,#7c3aed,#a855f7);color:#fff;box-shadow:0 0 10px rgba(168,85,247,.45)}
+      .img-create{
+        width:100%;margin-top:14px;padding:14px;border-radius:12px;border:1px solid rgba(216,180,254,.7);
+        background:linear-gradient(90deg,#7c3aed,#c026d3);color:#fff;font-size:17px;font-weight:800;letter-spacing:.4px;
+        box-shadow:0 0 18px rgba(168,85,247,.4);font-family:'Orbitron',sans-serif;
+      }
+      .img-create:disabled{opacity:.55}
+      .img-mic{display:inline-flex;align-items:center;gap:8px;flex:none;align-self:flex-start}
+      .img-mic svg{width:18px;height:18px;stroke:var(--neon-strong)}
+      .img-result{width:100%;max-height:580px;object-fit:contain;border-radius:14px;border:1px solid var(--line);background:#02060f;display:block}
+
       /* ---------- Settings ---------- */
       .set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;align-items:start}
       .set-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-soft)}
@@ -410,7 +424,7 @@
         .cmd-row{max-width:100%}
         .cmd-row input{font-size:15.5px;padding:12px 15px}
         .send-btn{padding:0 17px;flex:none}
-        .chip{font-size:14px;padding:8px 13px}
+        .chip{font-size:13.5px;padding:8px 6px;justify-content:center;text-align:center}
         .side{
           position:fixed;left:0;right:0;bottom:0;top:auto;height:auto;z-index:50;
           flex-direction:row;justify-content:space-around;gap:2px;padding:8px 2px calc(8px + env(safe-area-inset-bottom));
@@ -422,9 +436,9 @@
         .nav-btn .badge{display:none}
         .feat-grid{grid-template-columns:1fr}
         .tpl-grid{grid-template-columns:1fr}
-        .robot-wrap{width:min(228px,64vw)}
+        .robot-wrap{width:min(208px,60vw)}
         .robot-zone{padding-top:8px}
-        .chips{margin-top:10px;gap:7px}
+        .chips{margin-top:10px;gap:7px;display:grid;grid-template-columns:1fr 1fr}
         .voice-row{margin-top:6px}
         .cmd-row{margin-top:12px}
         .speech-bubble{font-size:16.5px}
@@ -612,6 +626,7 @@
                   <button class="chip" data-cmd="Robô, faz uma pesquisa sobre inteligência artificial"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4.6-4.6"/></svg>Fazer uma pesquisa</button>
                   <button class="chip" data-cmd="Robô, enviar uma mensagem"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.5L3 20l1-5.4A8.5 8.5 0 1 1 21 11.5z"/></svg>Enviar mensagem</button>
                   <button class="chip" data-cmd="Robô, abre o Instagram"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.2 6.8h.01"/></svg>Abrir Instagram</button>
+                  <button class="chip" data-cmd="Robô, cria uma imagem"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="1.8"/><path d="m4.5 18.5 5-5 3 3 3.5-3.5 3.5 3.5"/></svg>Criar imagem</button>
                   <button class="chip" data-cmd="Robô, cria uma legenda"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><path d="M6 16.5 16.8 5.7a2.1 2.1 0 0 1 3 3L9 19.5l-3.4.7L6 16.5z"/></svg>Criar legenda</button>
                   <button class="chip" data-cmd="Robô, escreve uma resposta"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17l-5-5 5-5"/><path d="M4 12h9a7 7 0 0 1 7 7v1"/></svg>Escrever resposta</button>
                 </div>
@@ -644,6 +659,7 @@
                   <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3.5"/></svg>Entender sua voz</li>
                   <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a5 5 0 0 1 5 5c2 .6 3 2 3 3.7 0 1.2-.6 2.3-1.5 3 .3 2.6-1.8 4.8-4.3 4.5A5 5 0 0 1 12 21a5 5 0 0 1-2.2-2.7C7.3 18.6 5.2 16.4 5.5 13.8A3.9 3.9 0 0 1 4 10.7C4 9 5 7.6 7 7a5 5 0 0 1 5-4z"/></svg>Conversar e ser inteligente</li>
                   <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 6-6 6 6 6"/><path d="m16 6 6 6-6 6"/></svg>Criar aplicativos</li>
+                  <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="1.8"/><path d="m4.5 18.5 5-5 3 3 3.5-3.5 3.5 3.5"/></svg>Criar imagens com IA</li>
                   <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>Gerar telas e designs</li>
                   <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v3M12 18.2v3M2.8 12h3M18.2 12h3M5.5 5.5l2.1 2.1M16.4 16.4l2.1 2.1M18.5 5.5l-2.1 2.1M7.6 16.4l-2.1 2.1"/></svg>Executar tarefas</li>
                   <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4.5 4.5 0 0 0-6 6L3 18l3 3 5.7-5.7a4.5 4.5 0 0 0 6-6L14 13l-3-3 3.7-3.7z"/></svg>Corrigir erros</li>
@@ -756,7 +772,49 @@
               <span class="stxt"><b>TikTok</b><small>Abrir o TikTok</small></span>
             </a>
           </div>
+          <div class="panel tool-form img-panel" id="imagePanel" style="margin-top:0">
+            <h2>CRIAR IMAGEM COM IA</h2>
+            <p class="panel-note">Descreva a imagem que você quer — <b>digitando ou falando no botão de microfone</b> — escolha o estilo e o formato, e eu crio a imagem de verdade para você baixar. Também funciona por comando: <b>“Robô, cria uma imagem de um bolo de aniversário rosa em 3D”</b>.</p>
+            <div class="row">
+              <textarea id="imgDesc" rows="2" placeholder="Descreva a imagem… Ex.: um bolo de aniversário rosa com detalhes dourados"></textarea>
+              <button class="btn img-mic" id="imgMicBtn" type="button" title="Descrever a imagem falando">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3.5"/></svg>
+                Falar
+              </button>
+            </div>
+            <div class="tone-row" id="imgStyleRow">
+              <span>Estilo:</span>
+              <button class="tone-btn img-opt" type="button" data-style="foto">Foto realista</button>
+              <button class="tone-btn img-opt" type="button" data-style="desenho">Desenho</button>
+              <button class="tone-btn img-opt sel" type="button" data-style="3d">3D</button>
+              <button class="tone-btn img-opt" type="button" data-style="anime">Anime</button>
+            </div>
+            <div class="tone-row" id="imgFormatRow">
+              <span>Formato:</span>
+              <button class="tone-btn img-opt sel" type="button" data-fmt="quadrado">Quadrado</button>
+              <button class="tone-btn img-opt" type="button" data-fmt="retrato">Retrato (em pé)</button>
+              <button class="tone-btn img-opt" type="button" data-fmt="paisagem">Paisagem</button>
+            </div>
+            <button class="img-create" id="imgGen" type="button">CRIAR MINHA IMAGEM</button>
+            <div id="imgProgWrap" style="display:none;margin-top:16px">
+              <p class="panel-note" id="imgProgText" style="margin:0 0 8px">Criando sua imagem…</p>
+              <div class="progress-track" style="margin:0"><div class="progress-fill" id="imgProgFill"></div></div>
+            </div>
+            <div id="imgResultWrap" style="display:none;margin-top:16px">
+              <img id="imgResult" class="img-result" alt="Imagem gerada pela IA a partir da sua descrição" />
+              <p class="panel-note" id="imgUsedDesc" style="margin:10px 0 0"></p>
+              <div class="row" style="margin-top:10px">
+                <button class="btn primary" id="imgDownload" type="button">Baixar imagem</button>
+                <button class="btn" id="imgVary" type="button">Outra variação</button>
+              </div>
+            </div>
+          </div>
+
           <div class="tools-grid">
+            <button class="tool" data-tool="image">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="1.8"/><path d="m4.5 18.5 5-5 3 3 3.5-3.5 3.5 3.5"/></svg>
+              <h3>Criar imagem</h3><p>Descreva qualquer imagem — a IA cria de verdade e você baixa o arquivo.</p>
+            </button>
             <button class="tool" data-tool="youtube">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="m10.5 9.5 5 2.5-5 2.5z" fill="currentColor"/></svg>
               <h3>Abrir o YouTube</h3><p>Abre o YouTube em uma nova aba.</p>
@@ -917,7 +975,8 @@
                 <li><b>Depende de configuração externa:</b> uma IA conversacional completa (API de modelo de linguagem), banco de dados e login (ex.: Supabase) e um servidor Node.js para guardar projetos entre aparelhos e proteger chaves de API.</li>
                 <li><b>Projetos desta sessão</b> ficam na memória da página: baixe os arquivos dos apps para guardá-los de forma permanente.</li>
                 <li><b>Novos poderes sociais:</b> o robô abre Instagram, WhatsApp, YouTube e TikTok, prepara mensagens de WhatsApp para o contato que você indicar (sempre com o cartão de confirmação antes de abrir), escreve respostas prontas no tom que você escolher e cria legendas de post com hashtags.</li>
-                <li><b>O que ele não faz sozinho:</b> publicar nas redes sociais e criar imagens. Este aplicativo abre os apps e prepara mensagens, respostas e legendas — mas a publicação final é feita por você no aplicativo da rede social, e publicar e criar imagens são feitos com a ajuda da <b>Lua aqui no chat</b>.</li>
+                <li><b>Criação de imagens:</b> o robô cria imagens de verdade a partir da sua descrição (na aba Ferramentas ou pelo comando “Robô, cria uma imagem de…”), usando o serviço gratuito externo de IA <b>Pollinations</b>. A qualidade pode variar de imagem para imagem — toque em “Outra variação” para tentar de novo. Para imagens de alta qualidade dos materiais da sua marca, como topos de bolo, convites e logos, peça para a <b>Lua aqui no chat</b>, que faz com todo o capricho nos detalhes.</li>
+                <li><b>O que ele não faz sozinho:</b> publicar nas redes sociais. Este aplicativo abre os apps e prepara mensagens, respostas e legendas — mas a publicação final é feita por você no aplicativo da rede social, e publicar é feito com a ajuda da <b>Lua aqui no chat</b>.</li>
               </ul>
             </div>
           </div>
@@ -1425,6 +1484,7 @@
       let pendingWhats = null;
       let pendingReply = null;
       let pendingCaption = false;
+      let pendingImage = false;
 
       /* ---------------- WhatsApp: destinatário e número ---------------- */
       function normalizePhone(d) {
@@ -1559,6 +1619,20 @@
           }
           pendingCreate = null;
         }
+        if (pendingImage) {
+          if (/^(cancela|cancelar|esquece|deixa pra la)$/.test(norm(text))) {
+            pendingImage = false; setState("idle");
+            robotSay("Tudo bem, cancelei a imagem. Não criei nada.");
+            return;
+          }
+          pendingImage = false;
+          const stI = detectImgStyle(norm(text)); if (stI) imgStyle = stI;
+          const fmI = detectImgFormat(norm(text)); if (fmI) imgFormat = fmI;
+          setImgOptUI();
+          $("#imgDesc").value = text;
+          createImage(text, imgStyle, imgFormat);
+          return;
+        }
         if (pendingWhats) {
           const w = pendingWhats;
           const tn = norm(text);
@@ -1645,7 +1719,7 @@
           robotSay("Eu sou o Robô Criador IA, seu assistente esférico: eu falo, entendo sua voz, crio aplicativos de verdade com código e prévia, faço pesquisas, abro páginas e organizo lembretes. É só pedir!", "happy"); return;
         }
         if (/o que voce (pode|sabe) fazer|o que voce faz|suas funcoes|ajuda|me ajuda/.test(t)) {
-          robotSay("Eu posso: criar aplicativos e sites por comando de voz (com código, teste e download), abrir o Instagram, o WhatsApp, o YouTube e o TikTok, preparar mensagens de WhatsApp com sua confirmação, escrever respostas prontas para suas clientes, criar legendas de post com hashtags, fazer pesquisas, criar documentos e organizar lembretes. Experimente: “Robô, cria uma legenda”."); return;
+          robotSay("Eu posso: criar aplicativos e sites por comando de voz (com código, teste e download), criar imagens de verdade a partir da sua descrição, abrir o Instagram, o WhatsApp, o YouTube e o TikTok, preparar mensagens de WhatsApp com sua confirmação, escrever respostas prontas para suas clientes, criar legendas de post com hashtags, fazer pesquisas, criar documentos e organizar lembretes. Experimente: “Robô, cria uma imagem de um bolo de aniversário rosa em 3D”."); return;
         }
         if (/que horas|horas sao|que dia (e|eh) hoje|data de hoje/.test(t)) {
           const d = new Date();
@@ -1673,6 +1747,22 @@
           pendingReply = { stage: "askMsg" };
           robotSay("Deixa comigo! Me manda a mensagem que você recebeu — pode ditar ou digitar — e depois você escolhe o tom: educado, animado ou formal.");
           setState("idle", "curious");
+          return;
+        }
+        if (/\b(imagem|ilustracao|desenho|foto)\b/.test(t) && /\b(cria|criar|crie|gera|gerar|gere|faz|fazer|faca|desenha|desenhar)\b/.test(t)) {
+          const stI = detectImgStyle(t); if (stI) imgStyle = stI;
+          const fmI = detectImgFormat(t); if (fmI) imgFormat = fmI;
+          setImgOptUI();
+          const desc = extractImageDesc(original);
+          if (desc.length >= 3) {
+            $("#imgDesc").value = desc;
+            createImage(desc, imgStyle, imgFormat);
+          } else {
+            pendingImage = true;
+            showView("ferramentas");
+            robotSay("Vamos criar sua imagem! Me descreva o que você quer ver — por exemplo: “um bolo de aniversário rosa em 3D”. Se quiser, escolha o estilo e o formato no painel Criar Imagem, aqui na aba Ferramentas.");
+            setState("idle", "curious");
+          }
           return;
         }
         if (/\b(cria|criar|crie|faz|fazer|faca|desenvolve|desenvolver|monta|montar|constroi|gerar|gera)\b/.test(t) && /\b(aplicativo|app|site|jogo|pagina|sistema|loja|delivery|calculadora)\b/.test(t)) {
@@ -1798,6 +1888,7 @@
       $$("[data-tool]").forEach(b => b.addEventListener("click", () => {
         const k = b.dataset.tool;
         if (k === "youtube") handleCommand("Robô, abre o YouTube");
+        if (k === "image") { $("#imagePanel").scrollIntoView({ behavior: "smooth" }); setTimeout(() => $("#imgDesc").focus(), 450); }
         if (k === "whats") handleCommand("Robô, enviar uma mensagem no WhatsApp");
         if (k === "reply") { $("#replyPanel").style.display = "block"; $("#replyPanel").scrollIntoView({ behavior: "smooth" }); }
         if (k === "caption") { $("#captionPanel").style.display = "block"; $("#captionPanel").scrollIntoView({ behavior: "smooth" }); }
@@ -1863,6 +1954,142 @@
       });
       $("#captionCopy").addEventListener("click", () => { if (currentCaption) copyText(currentCaption, "Legenda copiada! Agora é só colar no aplicativo da rede social."); });
       $("#captionClose").addEventListener("click", () => { $("#captionPanel").style.display = "none"; });
+
+      /* ---------------- Criar imagem (Pollinations) ---------------- */
+      const IMG_STYLES = {
+        foto: { label: "Foto realista", suffix: "realistic photograph, ultra detailed, professional photography, natural lighting" },
+        desenho: { label: "Desenho", suffix: "colorful digital illustration, cute drawing style, clean lines" },
+        "3d": { label: "3D", suffix: "3D render, Pixar style, glossy finish, octane render, high quality" },
+        anime: { label: "Anime", suffix: "anime style illustration, vibrant colors, studio quality" }
+      };
+      const IMG_FORMATS = {
+        quadrado: { label: "Quadrado", w: 1024, h: 1024 },
+        retrato: { label: "Retrato", w: 768, h: 1152 },
+        paisagem: { label: "Paisagem", w: 1152, h: 768 }
+      };
+      let imgStyle = "3d", imgFormat = "quadrado";
+      let imgCurrent = null, imgProgressTimer = null;
+
+      function setImgOptUI() {
+        $$("#imgStyleRow .img-opt").forEach(b => b.classList.toggle("sel", b.dataset.style === imgStyle));
+        $$("#imgFormatRow .img-opt").forEach(b => b.classList.toggle("sel", b.dataset.fmt === imgFormat));
+      }
+      $$("#imgStyleRow .img-opt").forEach(b => b.addEventListener("click", () => { imgStyle = b.dataset.style; setImgOptUI(); }));
+      $$("#imgFormatRow .img-opt").forEach(b => b.addEventListener("click", () => { imgFormat = b.dataset.fmt; setImgOptUI(); }));
+
+      function detectImgStyle(t) {
+        if (/\banime\b/.test(t)) return "anime";
+        if (/\b3d\b|tres dimensoes|render/.test(t)) return "3d";
+        if (/desenho|ilustracao|cartoon|caricatura/.test(t)) return "desenho";
+        if (/foto|realista|fotografia/.test(t)) return "foto";
+        return null;
+      }
+      function detectImgFormat(t) {
+        if (/retrato|vertical|em pe/.test(t)) return "retrato";
+        if (/paisagem|horizontal|deitad/.test(t)) return "paisagem";
+        if (/quadrad/.test(t)) return "quadrado";
+        return null;
+      }
+      function extractImageDesc(original) {
+        let d = (original || "").replace(/^(robô|robo|bolinha)[,!:.\s]+/i, "");
+        d = d.replace(/^(por favor[,!\s]*)?(cria|criar|crie|gera|gerar|gere|faz|fazer|faça|desenha|desenhar)\s+(uma|um)?\s*(imagem|foto|desenho|ilustração|ilustracao|arte)\s*(de|da|do|das|dos|sobre|com)?\s*/i, "");
+        d = d.replace(/^imagem\s*(de|da|do|sobre|com)?\s*/i, "");
+        if (/\bem 3d\b/i.test(d)) d = d.replace(/\s+em 3d\b/gi, "");
+        return d.replace(/[.!?]+$/, "").trim();
+      }
+
+      /* Tradução PT -> EN: tenta o serviço gratuito MyMemory; se falhar, usa o dicionário embutido */
+      const PT_EN = { bolo: "cake", aniversario: "birthday", rosa: "pink", de: "of", um: "a", uma: "a", com: "with", e: "and", em: "in", no: "in the", na: "in the", do: "of the", da: "of the", dos: "of the", das: "of the", festa: "party", menina: "girl", menino: "boy", anos: "years old", dourado: "golden", dourada: "golden", dourados: "golden", douradas: "golden", branco: "white", branca: "white", azul: "blue", vermelho: "red", vermelha: "red", verde: "green", amarelo: "yellow", amarela: "yellow", roxo: "purple", roxa: "purple", laranja: "orange", preto: "black", preta: "black", coracao: "heart", coracoes: "hearts", estrela: "star", estrelas: "stars", flor: "flower", flores: "flowers", jardim: "garden", praia: "beach", castelo: "castle", princesa: "princess", principe: "prince", heroi: "hero", gato: "cat", cachorro: "dog", cao: "dog", passaro: "bird", borboleta: "butterfly", unicornio: "unicorn", sereia: "mermaid", natal: "christmas", neve: "snow", arvore: "tree", sol: "sun", lua: "moon", mar: "sea", carro: "car", casa: "house", bebe: "baby", cha: "party", revelacao: "reveal", fundo: "background", colorido: "colorful", colorida: "colorful", brilhante: "shiny", brilho: "sparkles", detalhes: "details", topo: "topper", velas: "candles", vela: "candle", baloes: "balloons", balao: "balloon", confete: "confetti", bonito: "beautiful", bonita: "beautiful", lindo: "beautiful", linda: "beautiful", fofa: "cute", fofo: "cute", desenho: "drawing", foto: "photo", morango: "strawberry", chocolate: "chocolate", casamento: "wedding", noiva: "bride", campo: "field", montanha: "mountain", rio: "river", cidade: "city", robo: "robot", espaco: "space", foguete: "rocket", dragao: "dragon", fada: "fairy", magia: "magic" };
+      function dictTranslate(text) {
+        return norm(text).split(" ").map(w => PT_EN[w] || w).join(" ").trim();
+      }
+      async function translateToEn(text) {
+        try {
+          const ctrl = new AbortController();
+          const to = setTimeout(() => ctrl.abort(), 6000);
+          const r = await fetch("https://api.mymemory.translated.net/get?q=" + encodeURIComponent(text) + "&langpair=" + encodeURIComponent("pt|en"), { signal: ctrl.signal });
+          clearTimeout(to);
+          const j = await r.json();
+          const out = j && j.responseData && j.responseData.translatedText;
+          if (out && out.trim() && !/QUERY LENGTH LIMIT|MYMEMORY WARNING|INVALID/i.test(out)) return out.trim();
+        } catch (e) { /* sem rede ou serviço lento: usa o dicionário */ }
+        return dictTranslate(text) || text;
+      }
+
+      async function createImage(desc, styleKey, fmtKey) {
+        desc = (desc || "").trim();
+        if (!desc) { toast("Descreva a imagem primeiro — ex.: um bolo de aniversário rosa."); $("#imgDesc").focus(); return; }
+        showView("ferramentas");
+        const st = IMG_STYLES[styleKey] || IMG_STYLES["3d"];
+        const fm = IMG_FORMATS[fmtKey] || IMG_FORMATS.quadrado;
+        const prog = $("#imgProgWrap"), fill = $("#imgProgFill"), ptxt = $("#imgProgText");
+        const wrap = $("#imgResultWrap"), img = $("#imgResult"), genBtn = $("#imgGen");
+        wrap.style.display = "none";
+        prog.style.display = "block";
+        genBtn.disabled = true;
+        setState("thinking", "think");
+        ptxt.textContent = "Traduzindo sua descrição para o inglês…";
+        fill.style.width = "10%";
+        const en = await translateToEn(desc);
+        const prompt = en + ", " + st.suffix;
+        const seed = Math.floor(Math.random() * 1000000);
+        const url = "https://image.pollinations.ai/prompt/" + encodeURIComponent(prompt) + "?width=" + fm.w + "&height=" + fm.h + "&nologo=true&seed=" + seed;
+        imgCurrent = { desc: desc, style: styleKey, format: fmtKey, url: url };
+        ptxt.textContent = "Criando sua imagem com a IA… pode levar alguns segundos.";
+        let pct = 18; fill.style.width = pct + "%";
+        clearInterval(imgProgressTimer);
+        imgProgressTimer = setInterval(() => { pct = Math.min(92, pct + Math.random() * 7); fill.style.width = pct + "%"; }, 700);
+        img.onload = () => {
+          clearInterval(imgProgressTimer);
+          fill.style.width = "100%";
+          setTimeout(() => { prog.style.display = "none"; }, 400);
+          wrap.style.display = "block";
+          genBtn.disabled = false;
+          $("#imgUsedDesc").textContent = "“" + desc + "” • Estilo: " + st.label + " • Formato: " + fm.label;
+          setState("idle", "happy");
+          robotSay("Sua imagem ficou pronta! Ela está grande aqui na aba Ferramentas. Toque em “Baixar imagem” para salvar no seu celular, ou em “Outra variação” para eu criar uma nova versão dela.");
+        };
+        img.onerror = () => {
+          clearInterval(imgProgressTimer);
+          prog.style.display = "none";
+          genBtn.disabled = false;
+          setState("idle", "curious");
+          robotSay("Ops, o serviço de imagens não respondeu desta vez. Toque em “Criar minha imagem” para tentar de novo — às vezes ele demora um pouquinho.");
+          toast("Não consegui gerar a imagem agora. Tente de novo.");
+        };
+        img.src = url;
+      }
+      $("#imgGen").addEventListener("click", () => createImage($("#imgDesc").value, imgStyle, imgFormat));
+      $("#imgVary").addEventListener("click", () => { if (imgCurrent) createImage(imgCurrent.desc, imgCurrent.style, imgCurrent.format); });
+      $("#imgDownload").addEventListener("click", async () => {
+        if (!imgCurrent) return;
+        toast("Baixando a imagem…");
+        try {
+          const r = await fetch(imgCurrent.url);
+          if (!r.ok) throw new Error("fetch falhou");
+          const b = await r.blob();
+          const ext = b.type.indexOf("png") >= 0 ? "png" : "jpg";
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(b);
+          a.download = "imagem-" + (fileName(imgCurrent.desc).slice(0, 40) || "gerada") + "." + ext;
+          document.body.appendChild(a); a.click();
+          setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 400);
+          toast("Imagem baixada! Procure na pasta de downloads do celular.");
+        } catch (e) {
+          window.open(imgCurrent.url, "_blank");
+          toast("Abri a imagem em uma nova aba — segure nela e toque em “Salvar imagem”.");
+        }
+      });
+      const imgMicBtn = $("#imgMicBtn");
+      if (SR) {
+        const rImg = new SR();
+        rImg.lang = "pt-BR"; rImg.interimResults = true;
+        rImg.onresult = ev => { let txt = ""; for (const r of ev.results) txt += r[0].transcript; $("#imgDesc").value = txt; };
+        rImg.onerror = () => toast("Não consegui ouvir — digite a descrição da imagem.");
+        imgMicBtn.addEventListener("click", () => { try { rImg.start(); toast("Ouvindo… descreva a imagem que você quer."); } catch (e) {} });
+      } else {
+        imgMicBtn.addEventListener("click", () => toast("Este navegador não libera a voz aqui — digite a descrição da imagem."));
+      }
 
       /* ---------------- Configurações ---------------- */
       $("#setVoice").addEventListener("change", e => { settings.voice = e.target.checked; $("#soundToggle").classList.toggle("off", !settings.voice); if (!settings.voice && "speechSynthesis" in window) speechSynthesis.cancel(); });
