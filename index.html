@@ -1,0 +1,1562 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="data:," />
+    <title>Robô Criador IA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+    <style>
+      :root{
+        --bg:#020409;
+        --bg2:#050b18;
+        --panel:rgba(10,26,54,.62);
+        --panel-solid:#081426;
+        --line:rgba(56,150,255,.28);
+        --line-soft:rgba(56,150,255,.14);
+        --neon:#38b6ff;
+        --neon-strong:#57c8ff;
+        --cyan:#22d3ee;
+        --txt:#eaf4ff;
+        --muted:#9db9d8;
+        --state:#2f7bff;
+        --green:#22e07a;
+        --purple:#a855f7;
+        --orange:#fb923c;
+        --pink:#f472b6;
+        --radius:18px;
+      }
+      *{box-sizing:border-box}
+      html,body{height:100%}
+      body{
+        margin:0;
+        font-family:'Rajdhani',system-ui,sans-serif;
+        font-size:17px;
+        color:var(--txt);
+        background:
+          radial-gradient(900px 500px at 75% -10%, rgba(34,120,255,.20), transparent 60%),
+          radial-gradient(700px 420px at 8% 110%, rgba(34,211,238,.10), transparent 60%),
+          linear-gradient(180deg,var(--bg2),var(--bg));
+        overflow-x:hidden;
+      }
+      /* faint circuit grid */
+      body::before{
+        content:"";position:fixed;inset:0;pointer-events:none;opacity:.35;
+        background:
+          linear-gradient(rgba(56,150,255,.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(56,150,255,.05) 1px, transparent 1px);
+        background-size:56px 56px;
+        mask-image:radial-gradient(ellipse at 50% 30%, black 30%, transparent 78%);
+      }
+      button{font-family:inherit;cursor:pointer}
+      input,textarea,select{font-family:inherit}
+      :focus-visible{outline:2px solid var(--neon);outline-offset:2px}
+
+      .app{display:grid;grid-template-columns:216px 1fr;min-height:100vh;position:relative;z-index:1}
+
+      /* ---------- Sidebar ---------- */
+      .side{
+        border-right:1px solid var(--line-soft);
+        background:linear-gradient(180deg, rgba(6,16,36,.92), rgba(3,8,20,.92));
+        padding:20px 14px;display:flex;flex-direction:column;gap:6px;
+        position:sticky;top:0;height:100vh;
+      }
+      .brand{display:flex;align-items:center;gap:10px;padding:2px 8px 16px}
+      .brand-orb{
+        width:44px;height:44px;border-radius:50%;flex:none;position:relative;
+        background:radial-gradient(circle at 32% 28%, #7dd3fc 0%, #1d6fe0 38%, #04122e 78%);
+        box-shadow:0 0 18px rgba(56,182,255,.75), inset 0 0 10px rgba(160,220,255,.6);
+      }
+      .brand-orb::before,.brand-orb::after{
+        content:"";position:absolute;top:17px;width:8px;height:11px;border-radius:50%;
+        background:#dff6ff;box-shadow:0 0 8px #9fdcff;
+      }
+      .brand-orb::before{left:10px}.brand-orb::after{right:10px}
+      .brand h1{font-family:'Orbitron',sans-serif;font-size:17px;line-height:1.15;margin:0;letter-spacing:.4px}
+      .brand h1 span{color:var(--neon-strong)}
+      .brand small{display:block;color:var(--muted);font-size:12.5px;letter-spacing:.6px;margin-top:3px;font-weight:600}
+      .nav-btn{
+        display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+        background:transparent;border:1px solid transparent;color:var(--txt);
+        padding:12px 14px;border-radius:12px;font-size:16.5px;font-weight:600;
+        transition:background .18s,border-color .18s,box-shadow .18s;
+      }
+      .nav-btn svg{width:21px;height:21px;flex:none;stroke:var(--neon-strong)}
+      .nav-btn:hover{background:rgba(56,150,255,.10)}
+      .nav-btn.active{
+        background:linear-gradient(90deg, rgba(37,120,246,.85), rgba(20,80,190,.65));
+        border-color:rgba(120,200,255,.55);
+        box-shadow:0 0 16px rgba(37,120,246,.45), inset 0 0 12px rgba(140,210,255,.25);
+      }
+      .nav-btn .badge{margin-left:auto;background:var(--neon);color:#02122b;border-radius:999px;font-size:12px;font-weight:700;padding:1px 8px}
+      .side-foot{margin-top:auto;padding:10px 8px 2px;color:var(--muted);font-size:13px;line-height:1.45;border-top:1px solid var(--line-soft)}
+      .side-foot b{color:var(--txt)}
+
+      /* ---------- Main ---------- */
+      main{padding:22px 26px 40px;min-width:0}
+      .view{display:none;animation:viewIn .3s ease}
+      .view.active{display:block}
+      @keyframes viewIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+      .topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+      .status-pill{
+        display:inline-flex;align-items:center;gap:9px;padding:8px 16px;border-radius:999px;
+        background:var(--panel);border:1px solid var(--line);font-weight:700;font-size:15px;letter-spacing:.3px;
+      }
+      .status-dot{width:11px;height:11px;border-radius:50%;background:var(--state);box-shadow:0 0 12px var(--state);transition:background .3s,box-shadow .3s}
+      .status-pill.pulse .status-dot{animation:dotPulse 1s ease-in-out infinite}
+      @keyframes dotPulse{50%{transform:scale(1.45)}}
+      .top-actions{margin-left:auto;display:flex;gap:8px}
+      .icon-btn{
+        width:42px;height:42px;border-radius:50%;display:grid;place-items:center;
+        background:var(--panel);border:1px solid var(--line);color:var(--txt);
+      }
+      .icon-btn svg{width:20px;height:20px;stroke:var(--neon-strong)}
+      .icon-btn:hover{border-color:var(--neon);box-shadow:0 0 12px rgba(56,182,255,.35)}
+      .icon-btn.off svg{stroke:#5b7292}
+
+      /* ---------- Home layout ---------- */
+      .home-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(300px,1fr);gap:20px;align-items:start}
+      .stage{
+        position:relative;border:1px solid var(--line-soft);border-radius:24px;
+        background:
+          radial-gradient(520px 300px at 50% 88%, rgba(37,120,246,.28), transparent 65%),
+          radial-gradient(400px 260px at 50% 0%, rgba(34,211,238,.10), transparent 60%),
+          linear-gradient(180deg, rgba(8,20,44,.75), rgba(3,7,17,.9));
+        padding:26px 20px 20px;overflow:hidden;
+      }
+      .speech-bubble{
+        position:relative;max-width:430px;margin:0 auto 4px;text-align:center;
+        background:rgba(4,16,38,.88);border:1.5px solid var(--neon);border-radius:18px;
+        padding:13px 18px;font-size:18.5px;line-height:1.4;font-weight:600;
+        box-shadow:0 0 22px rgba(56,182,255,.30), inset 0 0 18px rgba(56,182,255,.08);
+        min-height:64px;display:flex;align-items:center;justify-content:center;
+      }
+      .speech-bubble::after{
+        content:"";position:absolute;left:50%;bottom:-11px;transform:translateX(-50%) rotate(45deg);
+        width:20px;height:20px;background:rgba(4,16,38,.88);
+        border-right:1.5px solid var(--neon);border-bottom:1.5px solid var(--neon);
+      }
+      .speech-bubble b{color:var(--neon-strong)}
+
+      /* ---------- Robot ---------- */
+      .robot-zone{display:flex;justify-content:center;padding:16px 0 2px}
+      .robot-wrap{width:min(330px,72vw);position:relative;--led:var(--state)}
+      .robot-float{animation:floaty 4.6s ease-in-out infinite;transform-origin:50% 60%}
+      @keyframes floaty{0%,100%{transform:translateY(0) rotate(-1.1deg)}50%{transform:translateY(-13px) rotate(1.1deg)}}
+      .robot-shadow{
+        position:absolute;left:50%;bottom:2px;transform:translateX(-50%);
+        width:58%;height:20px;border-radius:50%;
+        background:radial-gradient(ellipse, rgba(56,182,255,.5), transparent 70%);
+        animation:shadowPulse 4.6s ease-in-out infinite;filter:blur(3px);
+      }
+      @keyframes shadowPulse{0%,100%{transform:translateX(-50%) scaleX(1);opacity:.85}50%{transform:translateX(-50%) scaleX(.82);opacity:.55}}
+      .eye{transform-box:fill-box;transform-origin:center;animation:blink 5.2s infinite}
+      @keyframes blink{0%,93%,100%{transform:scaleY(1)}95.5%{transform:scaleY(.08)}}
+      .pupils{transition:transform .45s ease}
+      .robot-wrap[data-state="thinking"] .pupils{transform:translate(-7px,-8px)}
+      .robot-wrap[data-state="listening"] .pupils{transform:translate(0,-3px) scale(1.06)}
+      .robot-wrap[data-state="speaking"] .pupils{transform:translate(0,1px)}
+      .robot-wrap[data-expr="surprised"] .eye{animation:none;transform:scale(1.14)}
+      .robot-wrap[data-expr="curious"] .robot-float{animation-duration:3.4s}
+      .mouth-talk{display:none}
+      .robot-wrap[data-state="speaking"] .mouth-smile{display:none}
+      .robot-wrap[data-state="speaking"] .mouth-talk{display:block;transform-box:fill-box;transform-origin:center;animation:talk .28s ease-in-out infinite alternate}
+      @keyframes talk{from{transform:scaleY(.35)}to{transform:scaleY(1.25)}}
+      .led-glow{filter:drop-shadow(0 0 6px var(--led))}
+      .ear-ring{transform-box:fill-box;transform-origin:center;animation:ringSpin 9s linear infinite}
+      @keyframes ringSpin{to{transform:rotate(360deg)}}
+      .pedestal-ring{transform-box:fill-box;transform-origin:center;animation:ringSpin 14s linear infinite reverse}
+
+      /* ---------- Voice controls ---------- */
+      .voice-row{display:flex;align-items:center;gap:16px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+      .mic-btn{
+        width:86px;height:86px;border-radius:50%;border:2px solid var(--neon);flex:none;position:relative;
+        background:radial-gradient(circle at 35% 30%, #2b7fe0, #0a2c66 70%);
+        box-shadow:0 0 26px rgba(56,182,255,.55), inset 0 0 18px rgba(160,220,255,.35);
+        display:grid;place-items:center;transition:transform .15s;
+      }
+      .mic-btn svg{width:38px;height:38px;stroke:#eaf7ff;fill:none}
+      .mic-btn:hover{transform:scale(1.05)}
+      .mic-btn.listening{border-color:var(--green);background:radial-gradient(circle at 35% 30%, #1fae5f, #063d20 72%);box-shadow:0 0 30px rgba(34,224,122,.6)}
+      .mic-btn.listening::before,.mic-btn.listening::after{
+        content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid rgba(34,224,122,.65);animation:micRing 1.6s ease-out infinite;
+      }
+      .mic-btn.listening::after{animation-delay:.8s}
+      @keyframes micRing{from{transform:scale(1);opacity:.9}to{transform:scale(1.55);opacity:0}}
+      .wave{display:flex;align-items:center;gap:3px;height:44px;min-width:120px;justify-content:center}
+      .wave i{width:4px;border-radius:3px;background:linear-gradient(180deg,var(--cyan),var(--neon));height:8px;transition:height .2s}
+      .wave.active i{animation:waveMove 0.9s ease-in-out infinite}
+      .wave i:nth-child(3n){animation-delay:.15s}.wave i:nth-child(4n){animation-delay:.3s}.wave i:nth-child(5n){animation-delay:.45s}.wave i:nth-child(7n){animation-delay:.6s}
+      @keyframes waveMove{0%,100%{height:9px}50%{height:38px}}
+      .voice-hint{color:var(--muted);font-size:14.5px;text-align:center;width:100%;margin:2px 0 0}
+
+      .cmd-row{display:flex;gap:10px;max-width:640px;margin:16px auto 0}
+      .cmd-row input{
+        flex:1;background:rgba(4,12,28,.85);border:1px solid var(--line);border-radius:999px;
+        color:var(--txt);padding:13px 20px;font-size:16.5px;min-width:0;
+      }
+      .cmd-row input::placeholder{color:#6e8cb0}
+      .send-btn{
+        border-radius:999px;border:1px solid rgba(120,200,255,.6);padding:0 24px;font-size:16px;font-weight:700;color:#eaf7ff;
+        background:linear-gradient(90deg,#256df0,#14479e);box-shadow:0 0 14px rgba(37,120,246,.4);
+      }
+      .chips{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+      .chip{
+        display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;
+        background:rgba(6,18,40,.8);border:1px solid var(--line);color:var(--txt);font-size:15px;font-weight:600;
+      }
+      .chip svg{width:16px;height:16px;stroke:var(--neon-strong)}
+      .chip:hover{border-color:var(--neon);box-shadow:0 0 12px rgba(56,182,255,.3)}
+
+      /* ---------- Side column ---------- */
+      .panel{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);padding:18px;backdrop-filter:blur(6px)}
+      .panel h2{font-family:'Orbitron',sans-serif;font-size:15.5px;margin:0 0 12px;color:var(--neon-strong);letter-spacing:.6px}
+      .cap-list{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+      .cap-list li{display:flex;align-items:center;gap:12px;padding:8px 6px;border-radius:10px;font-weight:600;font-size:16px}
+      .cap-list li:hover{background:rgba(56,150,255,.08)}
+      .cap-list svg{width:20px;height:20px;stroke:var(--neon-strong);flex:none}
+      .chat-panel{margin-top:20px;display:flex;flex-direction:column;max-height:520px}
+      .chat-log{overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-right:4px;min-height:120px}
+      .msg{max-width:88%;padding:10px 14px;border-radius:14px;line-height:1.45;font-size:15.5px;white-space:pre-wrap;word-break:break-word}
+      .msg small{display:block;margin-top:5px;font-size:11.5px;opacity:.65;font-weight:600}
+      .msg.user{align-self:flex-end;background:linear-gradient(120deg,#1d5fd6,#123f8f);border:1px solid rgba(140,205,255,.4);border-bottom-right-radius:4px}
+      .msg.bot{align-self:flex-start;background:rgba(10,30,64,.9);border:1px solid var(--line-soft);border-bottom-left-radius:4px}
+      .msg.bot b{color:var(--neon-strong)}
+      .confirm-card{align-self:flex-start;background:rgba(66,32,4,.9);border:1px solid var(--orange);border-radius:14px;padding:12px 14px;max-width:92%}
+      .confirm-card p{margin:0 0 10px;font-size:15.5px;line-height:1.45}
+      .confirm-card .row{display:flex;gap:8px}
+      .btn{border-radius:10px;padding:9px 18px;font-weight:700;font-size:15px;border:1px solid var(--line);background:rgba(10,26,54,.9);color:var(--txt)}
+      .btn:hover{border-color:var(--neon)}
+      .btn.primary{background:linear-gradient(90deg,#256df0,#14479e);border-color:rgba(120,200,255,.6);color:#fff}
+      .btn.warn{background:linear-gradient(90deg,#c2570b,#8a3a05);border-color:#fdba74;color:#fff}
+      .btn.ghost{background:transparent}
+      .btn:disabled{opacity:.5;cursor:default}
+
+      /* ---------- Feature cards ---------- */
+      .feat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
+      .feat{border-radius:16px;padding:18px;border:1px solid;position:relative;overflow:hidden;text-align:left;color:var(--txt);width:100%}
+      .feat h3{margin:10px 0 5px;font-size:18px;font-family:'Orbitron',sans-serif;font-weight:700}
+      .feat p{margin:0;color:#cfe4ff;font-size:15px;line-height:1.4}
+      .feat .fic{width:46px;height:46px;border-radius:50%;display:grid;place-items:center}
+      .feat .fic svg{width:24px;height:24px;stroke:#fff}
+      .feat.purple{background:linear-gradient(140deg, rgba(88,28,180,.55), rgba(30,10,70,.85));border-color:rgba(192,132,252,.5)}
+      .feat.purple .fic{background:#7c3aed}
+      .feat.blue{background:linear-gradient(140deg, rgba(14,80,180,.55), rgba(4,26,66,.9));border-color:rgba(96,165,250,.5)}
+      .feat.blue .fic{background:#2563eb}
+      .feat.green{background:linear-gradient(140deg, rgba(4,120,70,.5), rgba(2,44,26,.9));border-color:rgba(52,211,153,.5)}
+      .feat.green .fic{background:#059669}
+      .feat.amber{background:linear-gradient(140deg, rgba(160,90,4,.5), rgba(56,32,2,.9));border-color:rgba(251,191,36,.5)}
+      .feat.amber .fic{background:#d97706}
+      .feat:hover{filter:brightness(1.14)}
+
+      /* ---------- Section heads ---------- */
+      .sec-head{margin:4px 0 18px}
+      .sec-head h2{font-family:'Orbitron',sans-serif;font-size:24px;margin:0 0 6px}
+      .sec-head h2 span{color:var(--neon-strong)}
+      .sec-head p{margin:0;color:var(--muted);font-size:16.5px;max-width:720px;line-height:1.5}
+
+      /* ---------- Create view ---------- */
+      .create-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:20px;align-items:start}
+      .field label{display:block;font-weight:700;margin:0 0 8px;font-size:16px}
+      .field textarea,.field input[type="text"]{
+        width:100%;background:rgba(4,12,28,.85);border:1px solid var(--line);border-radius:14px;color:var(--txt);
+        padding:13px 16px;font-size:16.5px;resize:vertical;
+      }
+      .tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+      .tpl{
+        text-align:left;border:1px solid var(--line-soft);background:rgba(8,22,48,.75);border-radius:14px;
+        padding:13px 14px;color:var(--txt);display:flex;gap:12px;align-items:flex-start;width:100%;
+      }
+      .tpl svg{width:24px;height:24px;stroke:var(--neon-strong);flex:none;margin-top:2px}
+      .tpl b{display:block;font-size:16.5px}
+      .tpl span{color:var(--muted);font-size:14px;line-height:1.35;display:block}
+      .tpl:hover,.tpl.sel{border-color:var(--neon);box-shadow:0 0 12px rgba(56,182,255,.25)}
+      .big-create{
+        width:100%;margin-top:16px;padding:15px;border-radius:14px;border:1px solid rgba(140,210,255,.65);
+        background:linear-gradient(90deg,#256df0,#0ea5c8);color:#fff;font-size:18px;font-weight:800;letter-spacing:.4px;
+        box-shadow:0 0 20px rgba(37,120,246,.45);font-family:'Orbitron',sans-serif;
+      }
+      .big-create:disabled{opacity:.55}
+      .pipeline{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+      .pipeline li{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;border:1px solid var(--line-soft);background:rgba(6,16,36,.6);font-weight:600;color:var(--muted)}
+      .pipeline li .st{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:13px;flex:none}
+      .pipeline li.doing{color:var(--txt);border-color:var(--purple)}
+      .pipeline li.doing .st{border-color:var(--purple);color:var(--purple);animation:dotPulse .7s infinite}
+      .pipeline li.done{color:var(--txt)}
+      .pipeline li.done .st{border-color:var(--green);background:var(--green);color:#02120a}
+      .progress-track{height:10px;border-radius:99px;background:rgba(56,150,255,.15);overflow:hidden;margin:14px 0 4px}
+      .progress-fill{height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,var(--purple),var(--cyan));transition:width .5s ease;box-shadow:0 0 12px rgba(34,211,238,.6)}
+      .code-box{
+        background:#02060f;border:1px solid var(--line-soft);border-radius:14px;padding:14px 16px;
+        font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.55;color:#8fd0ff;
+        max-height:260px;overflow:auto;white-space:pre-wrap;word-break:break-word;margin:0;
+      }
+      .preview-frame{width:100%;height:480px;border:1px solid var(--line);border-radius:14px;background:#fff}
+      .preview-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+      .preview-head h3{margin:0;font-size:18px;font-family:'Orbitron',sans-serif}
+      .preview-head .sp{flex:1}
+      .empty-note{border:1.5px dashed var(--line);border-radius:14px;padding:34px 20px;text-align:center;color:var(--muted);font-size:16.5px;line-height:1.55}
+
+      /* ---------- Projects ---------- */
+      .proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+      .proj{background:var(--panel);border:1px solid var(--line-soft);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:8px}
+      .proj .pic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:rgba(37,120,246,.18);border:1px solid var(--line)}
+      .proj .pic svg{width:26px;height:26px;stroke:var(--neon-strong)}
+      .proj h3{margin:2px 0 0;font-size:18.5px}
+      .proj p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.45}
+      .proj .meta{font-size:13px;color:#6e8cb0;font-weight:600}
+      .proj .row{display:flex;gap:8px;margin-top:auto;flex-wrap:wrap}
+      .proj .btn{padding:8px 13px;font-size:14px}
+
+      /* ---------- Tools ---------- */
+      .tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+      .tool{background:var(--panel);border:1px solid var(--line-soft);border-radius:16px;padding:18px;text-align:left;color:var(--txt);width:100%}
+      .tool svg{width:28px;height:28px;stroke:var(--neon-strong)}
+      .tool h3{margin:10px 0 4px;font-size:18px}
+      .tool p{margin:0;color:var(--muted);font-size:15px;line-height:1.45}
+      .tool:hover{border-color:var(--neon);box-shadow:0 0 14px rgba(56,182,255,.25)}
+      .tool-form{margin-top:18px}
+      .tool-form .row{display:flex;gap:10px;flex-wrap:wrap}
+      .tool-form input,.tool-form textarea{
+        flex:1;min-width:200px;background:rgba(4,12,28,.85);border:1px solid var(--line);border-radius:12px;color:var(--txt);padding:12px 15px;font-size:16px;
+      }
+      .reminder-list{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:8px}
+      .reminder-list li{display:flex;gap:10px;align-items:center;background:rgba(8,22,48,.75);border:1px solid var(--line-soft);border-radius:12px;padding:10px 14px;font-weight:600}
+      .reminder-list .tag{margin-left:auto;font-size:12.5px;color:var(--cyan);font-weight:700}
+
+      /* ---------- Settings ---------- */
+      .set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;align-items:start}
+      .set-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-soft)}
+      .set-row:last-child{border-bottom:none}
+      .set-row .grow{flex:1}
+      .set-row b{display:block;font-size:16.5px}
+      .set-row span{color:var(--muted);font-size:14.5px;line-height:1.4;display:block}
+      .switch{position:relative;width:52px;height:28px;flex:none}
+      .switch input{opacity:0;width:100%;height:100%;position:absolute;margin:0;cursor:pointer}
+      .switch .tr{position:absolute;inset:0;border-radius:99px;background:#12294d;border:1px solid var(--line);transition:.2s;pointer-events:none}
+      .switch .tr::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#7d9cc4;transition:.2s}
+      .switch input:checked + .tr{background:#1450b4;border-color:var(--neon)}
+      .switch input:checked + .tr::after{left:27px;background:#bfe6ff;box-shadow:0 0 8px var(--neon)}
+      input[type="range"]{accent-color:var(--neon);width:150px}
+      .swatches{display:flex;gap:9px}
+      .swatch{width:32px;height:32px;border-radius:50%;border:2px solid transparent;padding:0}
+      .swatch.sel{border-color:#fff;box-shadow:0 0 10px currentColor}
+      .about-list{margin:0;padding-left:20px;display:grid;gap:8px;line-height:1.5;font-size:15.5px}
+      .about-list b{color:var(--neon-strong)}
+      .kbd{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:#0a1c3a;border:1px solid var(--line);border-radius:6px;padding:1px 7px}
+
+      /* ---------- Floating bubble mode ---------- */
+      .float-ball{
+        position:fixed;right:18px;bottom:96px;width:76px;height:76px;border-radius:50%;z-index:60;display:none;
+        background:radial-gradient(circle at 32% 28%, #8fd8ff 0%, #1d6fe0 40%, #04122e 80%);
+        border:2px solid rgba(140,210,255,.8);box-shadow:0 0 26px rgba(56,182,255,.7);
+        animation:floaty 4s ease-in-out infinite;cursor:pointer;
+      }
+      .float-ball::before,.float-ball::after{content:"";position:absolute;top:30px;width:11px;height:15px;border-radius:50%;background:#eaf9ff;box-shadow:0 0 9px #aee4ff}
+      .float-ball::before{left:17px}.float-ball::after{right:17px}
+      .float-ball.show{display:block}
+      body.mini .app{visibility:hidden}
+      body.mini{background:#020409}
+
+      .toast{
+        position:fixed;left:50%;bottom:26px;transform:translate(-50%,80px);z-index:80;
+        background:rgba(4,18,42,.96);border:1px solid var(--neon);color:var(--txt);
+        padding:12px 20px;border-radius:12px;font-weight:600;font-size:15.5px;max-width:min(92vw,520px);text-align:center;
+        box-shadow:0 0 20px rgba(56,182,255,.4);transition:transform .35s ease;pointer-events:none;
+      }
+      .toast.show{transform:translate(-50%,0)}
+
+      /* ---------- Responsive ---------- */
+      @media (max-width:1080px){
+        .home-grid{grid-template-columns:1fr}
+        .chat-panel{max-height:440px}
+        .feat-grid{grid-template-columns:1fr 1fr}
+        .create-grid{grid-template-columns:1fr}
+      }
+      @media (max-width:760px){
+        .app{grid-template-columns:1fr}
+        main{padding:16px 12px 110px;overflow-x:clip}
+        .stage{padding:20px 12px 16px}
+        .speech-bubble{width:100%;font-size:16.5px;padding:12px 12px}
+        .voice-row{gap:10px}
+        .wave{min-width:0;flex:1;max-width:170px}
+        .voice-hint{font-size:14px;padding:0 6px}
+        .cmd-row{max-width:100%}
+        .cmd-row input{font-size:15.5px;padding:12px 15px}
+        .send-btn{padding:0 17px;flex:none}
+        .chip{font-size:14px;padding:8px 13px}
+        .side{
+          position:fixed;left:0;right:0;bottom:0;top:auto;height:auto;z-index:50;
+          flex-direction:row;justify-content:space-around;gap:2px;padding:8px 2px calc(8px + env(safe-area-inset-bottom));
+          border-right:none;border-top:1px solid var(--line);background:rgba(3,9,22,.97);
+        }
+        .brand,.side-foot{display:none}
+        .nav-btn{flex-direction:column;gap:4px;padding:8px 0;font-size:clamp(8px,2.3vw,10.5px);letter-spacing:-.2px;border-radius:10px;flex:1 1 0;min-width:0;justify-content:center;text-align:center;white-space:nowrap}
+        .nav-btn svg{width:20px;height:20px}
+        .nav-btn .badge{display:none}
+        .feat-grid{grid-template-columns:1fr}
+        .tpl-grid{grid-template-columns:1fr}
+        .robot-wrap{width:min(228px,64vw)}
+        .robot-zone{padding-top:8px}
+        .chips{margin-top:10px;gap:7px}
+        .voice-row{margin-top:6px}
+        .cmd-row{margin-top:12px}
+        .speech-bubble{font-size:16.5px}
+        .preview-frame{height:420px}
+        .float-ball{bottom:118px}
+      }
+      @media (prefers-reduced-motion:reduce){
+        .robot-float,.robot-shadow,.eye,.ear-ring,.pedestal-ring,.float-ball{animation:none}
+        .wave.active i{animation:none;height:20px}
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <!-- ============ SIDEBAR ============ -->
+      <aside class="side">
+        <div class="brand">
+          <div class="brand-orb" aria-hidden="true"></div>
+          <div>
+            <h1>Robô <span>Criador IA</span></h1>
+            <small>FALA • ENTENDE • CRIA • EXECUTA</small>
+          </div>
+        </div>
+        <button class="nav-btn active" data-view="inicio">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/></svg>
+          Início
+        </button>
+        <button class="nav-btn" data-view="conversar">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5c-1.5 0-3-.4-4.2-1.1L3 20l1.1-5.3A8.5 8.5 0 1 1 21 11.5z"/></svg>
+          Conversar
+        </button>
+        <button class="nav-btn" data-view="criar">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 6-6 6 6 6"/><path d="m16 6 6 6-6 6"/></svg>
+          Criar Apps
+        </button>
+        <button class="nav-btn" data-view="apps">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          Meus Apps
+          <span class="badge" id="projCount" style="display:none">0</span>
+        </button>
+        <button class="nav-btn" data-view="ferramentas">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4.5 4.5 0 0 0-6 6L3 18l3 3 5.7-5.7a4.5 4.5 0 0 0 6-6L14 13l-3-3 3.7-3.7z"/></svg>
+          Ferramentas
+        </button>
+        <button class="nav-btn" data-view="config">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.64 8.9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.01A1.7 1.7 0 0 0 10 3.09V3a2 2 0 1 1 4 0v.09c0 .68.4 1.3 1 1.55.61.26 1.32.1 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.01c.26.6.87 1 1.55 1H21a2 2 0 1 1 0 4h-.09c-.68 0-1.3.4-1.51 1z"/></svg>
+          Configurações
+        </button>
+        <div class="side-foot">
+          Diga <b>“Robô, cria um aplicativo de delivery”</b> ou toque no microfone para começar.
+        </div>
+      </aside>
+
+      <!-- ============ MAIN ============ -->
+      <main>
+        <div class="topbar">
+          <span class="status-pill" id="statusPill"><span class="status-dot"></span><span id="statusText">Aguardando você</span></span>
+          <div class="top-actions">
+            <button class="icon-btn" id="soundToggle" title="Ligar/desligar a voz do robô" aria-label="Ligar ou desligar a voz do robô">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9.4 9.4 0 0 1 0 13"/></svg>
+            </button>
+            <button class="icon-btn" id="miniToggle" title="Modo bolinha flutuante" aria-label="Ativar modo bolinha flutuante">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="11" r=".6" fill="currentColor"/><circle cx="15" cy="11" r=".6" fill="currentColor"/><path d="M9 15.5c1 1 5 1 6 0"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ======== VIEW: INÍCIO ======== -->
+        <section class="view active" id="view-inicio">
+          <div class="home-grid">
+            <div>
+              <div class="stage">
+                <div class="speech-bubble" id="speechBubble">Olá! Eu sou o seu <b>Robô Criador IA</b>. Fale o que você quer e eu faço para você!</div>
+                <div class="robot-zone">
+                  <div class="robot-wrap" id="robotWrap" data-state="idle" data-expr="happy">
+                    <svg viewBox="0 0 340 320" role="img" aria-label="Robô esférico futurista com olhos azuis neon">
+                      <defs>
+                        <radialGradient id="sphereGrad" cx="38%" cy="30%" r="80%">
+                          <stop offset="0%" stop-color="#3d4c66"/>
+                          <stop offset="28%" stop-color="#131c2e"/>
+                          <stop offset="62%" stop-color="#05080f"/>
+                          <stop offset="100%" stop-color="#01020a"/>
+                        </radialGradient>
+                        <radialGradient id="faceGrad" cx="50%" cy="42%" r="72%">
+                          <stop offset="0%" stop-color="#0a1830"/>
+                          <stop offset="70%" stop-color="#030711"/>
+                          <stop offset="100%" stop-color="#01030a"/>
+                        </radialGradient>
+                        <radialGradient id="irisGrad" cx="42%" cy="38%" r="70%">
+                          <stop offset="0%" stop-color="#eafcff"/>
+                          <stop offset="35%" stop-color="#6fe3ff"/>
+                          <stop offset="75%" stop-color="#0e9be8"/>
+                          <stop offset="100%" stop-color="#065a9e"/>
+                        </radialGradient>
+                        <linearGradient id="metalGrad" x1="0" y1="0" x2="1" y2="1">
+                          <stop offset="0%" stop-color="#5b6c8c"/>
+                          <stop offset="45%" stop-color="#141e33"/>
+                          <stop offset="100%" stop-color="#39445e"/>
+                        </linearGradient>
+                      </defs>
+
+                      <!-- pedestal -->
+                      <ellipse cx="170" cy="292" rx="105" ry="15" fill="rgba(20,60,140,.35)"/>
+                      <g class="pedestal-ring">
+                        <ellipse cx="170" cy="288" rx="98" ry="13" fill="none" stroke="#1d6fe0" stroke-width="2.5" stroke-dasharray="26 14" opacity=".85"/>
+                      </g>
+                      <ellipse cx="170" cy="288" rx="76" ry="10" fill="none" stroke="#38b6ff" stroke-width="2" opacity=".55"/>
+
+                      <g class="robot-float">
+                        <!-- ear pods -->
+                        <g>
+                          <circle cx="42" cy="168" r="30" fill="url(#metalGrad)"/>
+                          <circle cx="42" cy="168" r="21" fill="#050b18"/>
+                          <g class="ear-ring">
+                            <circle cx="42" cy="168" r="21" fill="none" class="led-glow" stroke="var(--led)" stroke-width="4" stroke-dasharray="34 32"/>
+                          </g>
+                          <circle cx="42" cy="168" r="7" fill="#0b1c3d"/>
+                          <circle cx="298" cy="168" r="30" fill="url(#metalGrad)"/>
+                          <circle cx="298" cy="168" r="21" fill="#050b18"/>
+                          <g class="ear-ring">
+                            <circle cx="298" cy="168" r="21" fill="none" class="led-glow" stroke="var(--led)" stroke-width="4" stroke-dasharray="34 32"/>
+                          </g>
+                          <circle cx="298" cy="168" r="7" fill="#0b1c3d"/>
+                        </g>
+                        <!-- sphere body -->
+                        <circle cx="170" cy="160" r="118" fill="url(#sphereGrad)"/>
+                        <circle cx="170" cy="160" r="118" fill="none" stroke="#3d5a86" stroke-width="1.4" opacity=".6"/>
+                        <path d="M62 108a118 118 0 0 1 62-52" fill="none" stroke="rgba(140,200,255,.35)" stroke-width="3" stroke-linecap="round"/>
+                        <!-- top LED -->
+                        <rect x="140" y="47" width="60" height="9" rx="4.5" class="led-glow" fill="var(--led)"/>
+                        <!-- face screen -->
+                        <ellipse cx="170" cy="168" rx="86" ry="80" fill="url(#faceGrad)" stroke="rgba(90,160,255,.35)" stroke-width="1.2"/>
+                        <!-- brows -->
+                        <path id="browL" d="M104 108q16-10 32-3" fill="none" stroke="#7dd3fc" stroke-width="5" stroke-linecap="round" opacity=".9"/>
+                        <path id="browR" d="M204 105q16-7 32 3" fill="none" stroke="#7dd3fc" stroke-width="5" stroke-linecap="round" opacity=".9"/>
+                        <!-- eyes -->
+                        <g class="pupils">
+                          <g class="eye">
+                            <circle cx="122" cy="152" r="30" fill="none" stroke="#38b6ff" stroke-width="3" opacity=".45"/>
+                            <circle cx="122" cy="152" r="24" fill="url(#irisGrad)"/>
+                            <circle cx="122" cy="152" r="11.5" fill="#02101f"/>
+                            <circle cx="115" cy="144" r="5" fill="#ffffff"/>
+                            <circle cx="129" cy="159" r="2.6" fill="#c9f2ff"/>
+                          </g>
+                          <g class="eye">
+                            <circle cx="218" cy="152" r="30" fill="none" stroke="#38b6ff" stroke-width="3" opacity=".45"/>
+                            <circle cx="218" cy="152" r="24" fill="url(#irisGrad)"/>
+                            <circle cx="218" cy="152" r="11.5" fill="#02101f"/>
+                            <circle cx="211" cy="144" r="5" fill="#ffffff"/>
+                            <circle cx="225" cy="159" r="2.6" fill="#c9f2ff"/>
+                          </g>
+                        </g>
+                        <!-- cheeks -->
+                        <ellipse cx="98" cy="192" rx="10" ry="5.5" fill="#38b6ff" opacity=".28"/>
+                        <ellipse cx="242" cy="192" rx="10" ry="5.5" fill="#38b6ff" opacity=".28"/>
+                        <!-- mouth -->
+                        <path class="mouth-smile" d="M152 198q18 15 36 0" fill="none" stroke="#54d8ff" stroke-width="6" stroke-linecap="round"/>
+                        <ellipse class="mouth-talk" cx="170" cy="203" rx="13" ry="9" fill="#54d8ff"/>
+                        <!-- bottom LED -->
+                        <rect x="146" y="262" width="48" height="8" rx="4" class="led-glow" fill="var(--led)"/>
+                        <!-- glossy highlight -->
+                        <ellipse cx="118" cy="86" rx="52" ry="24" fill="#ffffff" opacity=".10" transform="rotate(-24 118 86)"/>
+                      </g>
+                    </svg>
+                    <div class="robot-shadow"></div>
+                  </div>
+                </div>
+
+                <div class="voice-row">
+                  <button class="mic-btn" id="micBtn" aria-label="Falar com o robô">
+                    <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3.5"/></svg>
+                  </button>
+                  <div class="wave" id="wave" aria-hidden="true"></div>
+                  <p class="voice-hint" id="voiceHint">Toque no microfone e fale comigo — ou digite abaixo.</p>
+                </div>
+
+                <form class="cmd-row" id="cmdForm">
+                  <input type="text" id="cmdInput" placeholder="Ex.: Robô, cria um aplicativo de delivery" autocomplete="off" />
+                  <button class="send-btn" type="submit">Enviar</button>
+                </form>
+
+                <div class="chips">
+                  <button class="chip" data-cmd="Robô, cria um aplicativo"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>Criar um aplicativo</button>
+                  <button class="chip" data-cmd="Robô, abre o YouTube"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="m10.5 9.5 5 2.5-5 2.5z" fill="currentColor"/></svg>Abrir YouTube</button>
+                  <button class="chip" data-cmd="Robô, faz uma pesquisa sobre inteligência artificial"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4.6-4.6"/></svg>Fazer uma pesquisa</button>
+                  <button class="chip" data-cmd="Robô, enviar uma mensagem"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.5L3 20l1-5.4A8.5 8.5 0 1 1 21 11.5z"/></svg>Enviar mensagem</button>
+                </div>
+              </div>
+
+              <div class="feat-grid">
+                <button class="feat purple" data-goto-create>
+                  <span class="fic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></span>
+                  <h3>Crie seu app por voz</h3><p>Descreva o que você quer e eu crio para você.</p>
+                </button>
+                <button class="feat blue" data-goto-create>
+                  <span class="fic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="8.5" cy="10" r="1.3" fill="currentColor"/><circle cx="13" cy="7.5" r="1.3" fill="currentColor"/><circle cx="16" cy="12" r="1.3" fill="currentColor"/><path d="M12 21c-1.2 0-2-.9-2-2 0-1.4 1.2-2 2.6-2H15a3 3 0 0 0 3-3"/></svg></span>
+                  <h3>Design inteligente</h3><p>Eu crio telas e layouts modernos.</p>
+                </button>
+                <button class="feat green" data-goto-create>
+                  <span class="fic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 6-6 6 6 6"/><path d="m16 6 6 6-6 6"/></svg></span>
+                  <h3>Código automático</h3><p>Gero todo o código do aplicativo.</p>
+                </button>
+                <button class="feat amber" data-goto-apps>
+                  <span class="fic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 1 1 .7-8.93A5.5 5.5 0 0 1 18.3 11 3.8 3.8 0 0 1 17.5 18H7z"/><path d="M12 12v8"/><path d="m9.5 15.5 2.5-2.5 2.5 2.5"/></svg></span>
+                  <h3>App pronto para usar</h3><p>Testo e entrego o arquivo para abrir no celular.</p>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <div class="panel">
+                <h2>O QUE POSSO FAZER</h2>
+                <ul class="cap-list">
+                  <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3.5"/></svg>Entender sua voz</li>
+                  <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a5 5 0 0 1 5 5c2 .6 3 2 3 3.7 0 1.2-.6 2.3-1.5 3 .3 2.6-1.8 4.8-4.3 4.5A5 5 0 0 1 12 21a5 5 0 0 1-2.2-2.7C7.3 18.6 5.2 16.4 5.5 13.8A3.9 3.9 0 0 1 4 10.7C4 9 5 7.6 7 7a5 5 0 0 1 5-4z"/></svg>Conversar e ser inteligente</li>
+                  <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 6-6 6 6 6"/><path d="m16 6 6 6-6 6"/></svg>Criar aplicativos</li>
+                  <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>Gerar telas e designs</li>
+                  <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v3M12 18.2v3M2.8 12h3M18.2 12h3M5.5 5.5l2.1 2.1M16.4 16.4l2.1 2.1M18.5 5.5l-2.1 2.1M7.6 16.4l-2.1 2.1"/></svg>Executar tarefas</li>
+                  <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4.5 4.5 0 0 0-6 6L3 18l3 3 5.7-5.7a4.5 4.5 0 0 0 6-6L14 13l-3-3 3.7-3.7z"/></svg>Corrigir erros</li>
+                  <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4.5v15l13-7.5z"/></svg>Testar e mostrar o resultado</li>
+                  <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 1 1 .7-8.93A5.5 5.5 0 0 1 18.3 11 3.8 3.8 0 0 1 17.5 18H7z"/><path d="M12 12v8"/><path d="m9.5 15.5 2.5-2.5 2.5 2.5"/></svg>Baixar o app pronto</li>
+                </ul>
+              </div>
+
+              <div class="panel chat-panel">
+                <h2>CONVERSA</h2>
+                <div class="chat-log" id="chatLog"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======== VIEW: CONVERSAR ======== -->
+        <section class="view" id="view-conversar">
+          <div class="sec-head">
+            <h2>Conversar com o <span>Robô</span></h2>
+            <p>Toda a conversa fica aqui. Fale pelo microfone na tela inicial ou digite abaixo — eu respondo por voz e por texto.</p>
+          </div>
+          <div class="panel" style="display:flex;flex-direction:column;max-height:60vh">
+            <div class="chat-log" id="chatLogFull" style="min-height:220px"></div>
+          </div>
+          <form class="cmd-row" id="cmdForm2" style="margin-left:0">
+            <input type="text" id="cmdInput2" placeholder="Digite sua mensagem para o robô…" autocomplete="off" />
+            <button class="send-btn" type="submit">Enviar</button>
+          </form>
+        </section>
+
+        <!-- ======== VIEW: CRIAR APPS ======== -->
+        <section class="view" id="view-criar">
+          <div class="sec-head">
+            <h2>Criar <span>aplicativos</span></h2>
+            <p>Descreva a ideia ou escolha um modelo. Eu planejo, gero o código de verdade, testo a estrutura e mostro a prévia funcionando — depois você baixa o arquivo do app.</p>
+          </div>
+          <div class="create-grid">
+            <div class="panel">
+              <div class="field">
+                <label for="ideaInput">Descreva seu aplicativo</label>
+                <textarea id="ideaInput" rows="3" placeholder="Ex.: um aplicativo de delivery de pizza com cardápio, carrinho e acompanhamento do pedido"></textarea>
+              </div>
+              <div class="field" style="margin-top:16px">
+                <label>Ou comece de um modelo pronto</label>
+                <div class="tpl-grid" id="tplGrid"></div>
+              </div>
+              <button class="big-create" id="createBtn">CRIAR MEU APLICATIVO</button>
+              <div style="margin-top:20px">
+                <label style="font-weight:700;display:block;margin-bottom:10px">Progresso da criação</label>
+                <ul class="pipeline" id="pipeline">
+                  <li data-step><span class="st">1</span>Entender a ideia</li>
+                  <li data-step><span class="st">2</span>Planejar as funcionalidades</li>
+                  <li data-step><span class="st">3</span>Criar as telas e componentes</li>
+                  <li data-step><span class="st">4</span>Escrever o código</li>
+                  <li data-step><span class="st">5</span>Testar e corrigir erros</li>
+                  <li data-step><span class="st">6</span>Mostrar a prévia</li>
+                </ul>
+                <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+              </div>
+            </div>
+            <div>
+              <div class="panel" id="previewPanel">
+                <div class="preview-head">
+                  <h3>Prévia do aplicativo</h3>
+                  <span class="sp"></span>
+                  <button class="btn" id="codeToggleBtn" disabled>Ver código</button>
+                  <button class="btn" id="openAppBtn" disabled>Abrir em tela cheia</button>
+                  <button class="btn primary" id="downloadAppBtn" disabled>Baixar o app</button>
+                </div>
+                <div class="empty-note" id="previewEmpty">Nenhum aplicativo criado ainda nesta sessão.<br />Descreva uma ideia ao lado, escolha um modelo ou diga:<br /><b>“Robô, cria um aplicativo de delivery”</b>.</div>
+                <iframe class="preview-frame" id="previewFrame" title="Prévia do aplicativo gerado" style="display:none" sandbox="allow-scripts allow-modals"></iframe>
+                <pre class="code-box" id="codeBox" style="display:none;margin-top:12px"></pre>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======== VIEW: MEUS APPS ======== -->
+        <section class="view" id="view-apps">
+          <div class="sec-head">
+            <h2>Meus <span>Apps</span></h2>
+            <p>Aplicativos criados nesta sessão. Abra a prévia, baixe o arquivo HTML para guardar no celular ou continue editando por comando de voz.</p>
+          </div>
+          <div class="proj-grid" id="projGrid"></div>
+          <div class="empty-note" id="projEmpty">Você ainda não criou aplicativos nesta sessão.<br />Diga <b>“Robô, cria um aplicativo de vendas”</b> para começar.</div>
+        </section>
+
+        <!-- ======== VIEW: FERRAMENTAS ======== -->
+        <section class="view" id="view-ferramentas">
+          <div class="sec-head">
+            <h2><span>Ferramentas</span></h2>
+            <p>Atalhos rápidos que o robô executa para você. Ações sensíveis, como enviar mensagens, sempre pedem sua confirmação antes.</p>
+          </div>
+          <div class="tools-grid">
+            <button class="tool" data-tool="youtube">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="m10.5 9.5 5 2.5-5 2.5z" fill="currentColor"/></svg>
+              <h3>Abrir o YouTube</h3><p>Abre o YouTube em uma nova aba.</p>
+            </button>
+            <button class="tool" data-tool="whats">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.5L3 20l1-5.4A8.5 8.5 0 1 1 21 11.5z"/></svg>
+              <h3>Enviar mensagem</h3><p>Prepara uma mensagem no WhatsApp — só envia com sua confirmação.</p>
+            </button>
+            <button class="tool" data-tool="doc">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg>
+              <h3>Criar documento</h3><p>Escreva um texto e baixe como documento.</p>
+            </button>
+            <button class="tool" data-tool="fix">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4.5 4.5 0 0 0-6 6L3 18l3 3 5.7-5.7a4.5 4.5 0 0 0 6-6L14 13l-3-3 3.7-3.7z"/></svg>
+              <h3>Corrigir erros do app</h3><p>Verifica a estrutura do último app criado e relata o que encontrou.</p>
+            </button>
+            <button class="tool" data-tool="continue">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+              <h3>Continuar último projeto</h3><p>Reabre a prévia do aplicativo mais recente.</p>
+            </button>
+            <button class="tool" data-tool="time">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+              <h3>Que horas são?</h3><p>O robô fala a data e a hora atual.</p>
+            </button>
+          </div>
+
+          <div class="panel tool-form" id="searchPanel">
+            <h2>PESQUISAR NA INTERNET</h2>
+            <div class="row">
+              <input type="text" id="searchInput" placeholder="O que você quer pesquisar?" />
+              <button class="btn primary" id="searchBtn">Pesquisar</button>
+            </div>
+          </div>
+
+          <div class="panel tool-form" id="docPanel" style="display:none">
+            <h2>CRIAR DOCUMENTO</h2>
+            <div class="row">
+              <input type="text" id="docTitle" placeholder="Título do documento" style="flex:0 1 260px" />
+            </div>
+            <div class="row" style="margin-top:10px">
+              <textarea id="docBody" rows="4" placeholder="Escreva o texto do documento…"></textarea>
+            </div>
+            <div class="row" style="margin-top:10px">
+              <button class="btn primary" id="docDownload">Baixar documento</button>
+              <button class="btn ghost" id="docClose">Fechar</button>
+            </div>
+          </div>
+
+          <div class="panel tool-form">
+            <h2>LEMBRETES DESTA SESSÃO</h2>
+            <div class="row">
+              <input type="text" id="remText" placeholder="Ex.: ligar para a cliente às 15h" />
+              <input type="number" id="remMin" placeholder="Min" min="1" max="600" style="flex:0 1 90px;min-width:90px" />
+              <button class="btn primary" id="remBtn">Criar lembrete</button>
+            </div>
+            <ul class="reminder-list" id="remList"></ul>
+          </div>
+        </section>
+
+        <!-- ======== VIEW: CONFIG ======== -->
+        <section class="view" id="view-config">
+          <div class="sec-head">
+            <h2><span>Configurações</span></h2>
+            <p>Controle a voz, a aparência e o comportamento do seu robô.</p>
+          </div>
+          <div class="set-grid">
+            <div class="panel">
+              <h2>VOZ E COMPORTAMENTO</h2>
+              <div class="set-row">
+                <div class="grow"><b>Respostas faladas</b><span>O robô fala as respostas em voz alta (português do Brasil).</span></div>
+                <label class="switch"><input type="checkbox" id="setVoice" checked /><span class="tr"></span></label>
+              </div>
+              <div class="set-row">
+                <div class="grow"><b>Velocidade da fala</b><span>Mais devagar ou mais rápido.</span></div>
+                <input type="range" id="setRate" min="0.7" max="1.4" step="0.1" value="1" />
+              </div>
+              <div class="set-row">
+                <div class="grow"><b>Confirmar ações sensíveis</b><span>Pedir autorização antes de enviar mensagens ou abrir links externos.</span></div>
+                <label class="switch"><input type="checkbox" id="setConfirm" checked /><span class="tr"></span></label>
+              </div>
+              <div class="set-row">
+                <div class="grow"><b>Modo bolinha flutuante</b><span>Encolhe o robô para uma bolinha que flutua no canto desta página. Sobre outros aplicativos, esse modo exige o app instalado no celular.</span></div>
+                <label class="switch"><input type="checkbox" id="setMini" /><span class="tr"></span></label>
+              </div>
+            </div>
+            <div class="panel">
+              <h2>APARÊNCIA — COR DAS LUZES</h2>
+              <div class="set-row">
+                <div class="grow"><b>Cor principal do robô</b><span>Muda o brilho dos olhos e dos LEDs.</span></div>
+                <div class="swatches">
+                  <button class="swatch sel" data-accent="#38b6ff" style="background:#38b6ff;color:#38b6ff" aria-label="Azul"></button>
+                  <button class="swatch" data-accent="#22d3ee" style="background:#22d3ee;color:#22d3ee" aria-label="Ciano"></button>
+                  <button class="swatch" data-accent="#a855f7" style="background:#a855f7;color:#a855f7" aria-label="Roxo"></button>
+                  <button class="swatch" data-accent="#f472b6" style="background:#f472b6;color:#f472b6" aria-label="Rosa"></button>
+                  <button class="swatch" data-accent="#22e07a" style="background:#22e07a;color:#22e07a" aria-label="Verde"></button>
+                </div>
+              </div>
+              <div class="set-row">
+                <div class="grow"><b>Estados das luzes</b><span>Azul: aguardando • Verde: ouvindo • Roxo: pensando • Ciano: falando • Laranja: pedindo autorização.</span></div>
+              </div>
+            </div>
+            <div class="panel">
+              <h2>SOBRE ESTA VERSÃO</h2>
+              <ul class="about-list">
+                <li><b>Funciona agora, no navegador:</b> microfone e fala em português (reconhecimento de voz do Chrome/Android), conversa por comandos, gerador de aplicativos web com código real, prévia funcionando e download do arquivo do app.</li>
+                <li><b>Os apps gerados são arquivos HTML de verdade:</b> abra no celular ou no computador, sem instalar nada. Para virar app Android/iOS de loja, o projeto precisa ser empacotado com ferramentas como Expo/React Native.</li>
+                <li><b>Depende de configuração externa:</b> uma IA conversacional completa (API de modelo de linguagem), banco de dados e login (ex.: Supabase) e um servidor Node.js para guardar projetos entre aparelhos e proteger chaves de API.</li>
+                <li><b>Projetos desta sessão</b> ficam na memória da página: baixe os arquivos dos apps para guardá-los de forma permanente.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <button class="float-ball" id="floatBall" title="Voltar ao Robô Criador IA" aria-label="Voltar ao Robô Criador IA"></button>
+    <div class="toast" id="toast" role="status"></div>
+
+    <script>
+      /* ================================================================
+         ROBÔ CRIADOR IA — lógica da página
+         ================================================================ */
+      "use strict";
+      const $ = (s, c) => (c || document).querySelector(s);
+      const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
+
+      const STATE_COLORS = { idle:"#2f7bff", listening:"#22e07a", thinking:"#a855f7", speaking:"#22d3ee", auth:"#fb923c" };
+      const STATE_LABELS = { idle:"Aguardando você", listening:"Ouvindo você…", thinking:"Pensando…", speaking:"Falando…", auth:"Preciso da sua autorização" };
+      const settings = { voice:true, rate:1, confirm:true };
+      let currentState = "idle";
+      let accent = "#38b6ff";
+
+      const robotWrap = $("#robotWrap");
+      const statusPill = $("#statusPill");
+      const statusText = $("#statusText");
+      const bubble = $("#speechBubble");
+      const wave = $("#wave");
+      for (let i = 0; i < 22; i++) wave.appendChild(document.createElement("i"));
+
+      function setState(state, expr) {
+        currentState = state;
+        robotWrap.dataset.state = state;
+        robotWrap.style.setProperty("--led", state === "idle" ? accent : STATE_COLORS[state]);
+        statusText.textContent = STATE_LABELS[state];
+        statusPill.classList.toggle("pulse", state === "speaking" || state === "listening");
+        statusPill.querySelector(".status-dot").style.background = state === "idle" ? accent : STATE_COLORS[state];
+        statusPill.querySelector(".status-dot").style.boxShadow = "0 0 12px " + (state === "idle" ? accent : STATE_COLORS[state]);
+        wave.classList.toggle("active", state === "listening" || state === "speaking");
+        if (expr) robotWrap.dataset.expr = expr;
+      }
+      function setBubble(html) { bubble.innerHTML = html; }
+
+      /* ---------------- Toast ---------------- */
+      let toastTimer = null;
+      function toast(msg) {
+        const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+        clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), 3400);
+      }
+
+      /* ---------------- Chat ---------------- */
+      const chatLog = $("#chatLog"), chatLogFull = $("#chatLogFull");
+      function nowTime() { return new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }); }
+      function addMsg(who, text) {
+        [chatLog, chatLogFull].forEach(log => {
+          if (!log) return;
+          const d = document.createElement("div");
+          d.className = "msg " + who;
+          d.innerHTML = "";
+          const span = document.createElement("span"); span.textContent = text; d.appendChild(span);
+          const sm = document.createElement("small"); sm.textContent = (who === "user" ? "Você" : "Robô") + " • " + nowTime(); d.appendChild(sm);
+          log.appendChild(d); log.scrollTop = log.scrollHeight;
+        });
+      }
+      function addConfirmCard(text, onYes, onNo) {
+        [chatLog, chatLogFull].forEach(log => {
+          if (!log) return;
+          const card = document.createElement("div"); card.className = "confirm-card";
+          const p = document.createElement("p"); p.textContent = text; card.appendChild(p);
+          const row = document.createElement("div"); row.className = "row";
+          const yes = document.createElement("button"); yes.className = "btn warn"; yes.textContent = "Confirmar";
+          const no = document.createElement("button"); no.className = "btn ghost"; no.textContent = "Cancelar";
+          yes.addEventListener("click", () => { card.remove(); onYes && onYes(); });
+          no.addEventListener("click", () => { card.remove(); onNo && onNo(); });
+          row.appendChild(yes); row.appendChild(no); card.appendChild(row);
+          log.appendChild(card); log.scrollTop = log.scrollHeight;
+        });
+      }
+
+      /* ---------------- Fala (TTS) ---------------- */
+      function speak(text, done) {
+        const plain = text.replace(/\*\*/g, "");
+        setBubble(escapeHtml(plain));
+        if (!settings.voice || !("speechSynthesis" in window)) { setState("speaking"); setTimeout(() => { setState("idle"); done && done(); }, Math.min(900 + plain.length * 28, 3800)); return; }
+        try {
+          speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(plain);
+          u.lang = "pt-BR"; u.rate = settings.rate;
+          const voices = speechSynthesis.getVoices();
+          const pt = voices.find(v => /pt[-_]BR/i.test(v.lang)) || voices.find(v => /^pt/i.test(v.lang));
+          if (pt) u.voice = pt;
+          u.onstart = () => setState("speaking");
+          u.onend = () => { setState("idle"); done && done(); };
+          u.onerror = () => { setState("idle"); done && done(); };
+          setState("speaking");
+          speechSynthesis.speak(u);
+        } catch (e) { setState("idle"); done && done(); }
+      }
+      if ("speechSynthesis" in window) speechSynthesis.getVoices();
+      function escapeHtml(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+      function robotSay(text, expr) { addMsg("bot", text); speak(text); if (expr) robotWrap.dataset.expr = expr; }
+
+      /* ---------------- Reconhecimento de voz ---------------- */
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      let recog = null, listening = false;
+      const micBtn = $("#micBtn"), voiceHint = $("#voiceHint");
+      if (SR) {
+        recog = new SR();
+        recog.lang = "pt-BR"; recog.interimResults = true; recog.maxAlternatives = 1;
+        recog.onresult = (ev) => {
+          let txt = "";
+          for (const r of ev.results) txt += r[0].transcript;
+          $("#cmdInput").value = txt;
+          if (ev.results[ev.results.length - 1].isFinal) { stopListen(); handleCommand(txt); }
+        };
+        recog.onerror = (ev) => {
+          stopListen();
+          if (ev.error === "not-allowed") robotSay("Não consegui acessar o microfone. Verifique a permissão do navegador ou digite seu comando aqui embaixo.");
+          else if (ev.error !== "aborted") voiceHint.textContent = "Não entendi — toque no microfone e tente de novo, ou digite abaixo.";
+        };
+        recog.onend = () => { if (listening) { listening = false; micBtn.classList.remove("listening"); if (currentState === "listening") setState("idle"); } };
+      }
+      function startListen() {
+        if (!SR) { robotSay("Este navegador não libera o reconhecimento de voz. No Chrome do celular ele funciona melhor — mas você pode digitar seu comando aqui embaixo que eu entendo do mesmo jeito!", "curious"); return; }
+        try { recog.start(); listening = true; micBtn.classList.add("listening"); setState("listening"); voiceHint.textContent = "Estou ouvindo… pode falar!"; } catch (e) {}
+      }
+      function stopListen() { try { recog && recog.stop(); } catch (e) {} listening = false; micBtn.classList.remove("listening"); }
+      micBtn.addEventListener("click", () => { if (listening) { stopListen(); setState("idle"); } else startListen(); });
+
+      /* ---------------- Navegação ---------------- */
+      function showView(name) {
+        $$(".view").forEach(v => v.classList.toggle("active", v.id === "view-" + name));
+        $$(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.view === name));
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      $$(".nav-btn").forEach(b => b.addEventListener("click", () => showView(b.dataset.view)));
+      $$("[data-goto-create]").forEach(b => b.addEventListener("click", () => showView("criar")));
+      $$("[data-goto-apps]").forEach(b => b.addEventListener("click", () => showView("apps")));
+      $$(".chip").forEach(c => c.addEventListener("click", () => handleCommand(c.dataset.cmd)));
+
+      /* ---------------- Utilidades de texto ---------------- */
+      function norm(s) { return (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim(); }
+      function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+      function fileName(s) { return norm(s).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "meu-app"; }
+      function download(filename, content, type) {
+        const blob = new Blob([content], { type: type || "text/html;charset=utf-8" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob); a.download = filename;
+        document.body.appendChild(a); a.click();
+        setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 400);
+      }
+    </script>
+    <script>
+      /* ================================================================
+         GERADOR DE APLICATIVOS — modelos que produzem HTML real e funcional
+         ================================================================ */
+      function appShell(title, color, bodyHtml, jsCode) {
+        return "<!doctype html>\n<html lang=\"pt-BR\">\n<head>\n<meta charset=\"utf-8\" />\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n<title>" + title + "</title>\n<style>\n" +
+          "*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:#f6f7fb;color:#17203a}" +
+          "header{background:" + color + ";color:#fff;padding:22px 18px;text-align:center}header h1{margin:0;font-size:26px}header p{margin:6px 0 0;opacity:.9}" +
+          "main{max-width:640px;margin:0 auto;padding:18px}h2{font-size:19px;margin:22px 0 10px}" +
+          ".card{background:#fff;border-radius:14px;padding:14px 16px;box-shadow:0 2px 10px rgba(20,30,80,.08);margin-bottom:12px}" +
+          ".row{display:flex;align-items:center;gap:12px}.grow{flex:1}.price{font-weight:800;color:" + color + "}" +
+          "button{background:" + color + ";color:#fff;border:0;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer;font-size:15px}" +
+          "button.sec{background:#e8ecf7;color:#17203a}input,select{padding:11px;border:1.5px solid #ccd4ea;border-radius:10px;font-size:15px;width:100%}" +
+          ".total{font-size:19px;font-weight:800}.muted{color:#66738f;font-size:14px}.bar{height:10px;background:#e8ecf7;border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:" + color + ";transition:width .6s}" +
+          ".pill{display:inline-block;background:#eef2ff;color:" + color + ";border-radius:99px;padding:3px 11px;font-size:13px;font-weight:700}" +
+          "footer{text-align:center;color:#8a94ad;font-size:13px;padding:18px}.done{color:#0a8f4d;font-weight:700}" +
+          "\n</style>\n</head>\n<body>\n" + bodyHtml + "\n<script>\n" + jsCode + "\n<\/script>\n</body>\n</html>";
+      }
+      const fmtBRL = "function fmt(v){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}";
+
+      const TEMPLATES = {
+        delivery: {
+          label: "Delivery de comida", icon: "bike",
+          desc: "Cardápio, carrinho e acompanhamento do pedido.",
+          features: "cardápio dos restaurantes, carrinho de compras e acompanhamento do pedido em tempo real",
+          build(name) {
+            const items = [
+              ["Pizza Margherita", "Pizzaria Bella Massa", 42.9], ["Pizza Calabresa", "Pizzaria Bella Massa", 46.9],
+              ["Hambúrguer Artesanal", "Burger House", 32.5], ["Combo Casal", "Burger House", 59.9],
+              ["Açaí 500ml", "Açaí da Praia", 18.0], ["Sushi Combo 20 peças", "Sushi Yama", 68.0]
+            ];
+            let cards = "", data = "var MENU=[";
+            items.forEach((it, i) => {
+              data += (i ? "," : "") + "{n:'" + it[0] + "',r:'" + it[1] + "',p:" + it[2] + "}";
+              cards += "<div class='card row'><div class='grow'><b>" + it[0] + "</b><div class='muted'>" + it[1] + "</div></div><span class='price'>R$ " + it[2].toFixed(2).replace(".", ",") + "</span><button onclick='add(" + i + ")'>Adicionar</button></div>";
+            });
+            data += "];";
+            const body = "<header><h1>🍕 " + name + "</h1><p>Peça sua comida favorita sem sair de casa</p></header><main>" +
+              "<h2>Cardápio</h2>" + cards +
+              "<h2>🛒 Seu carrinho</h2><div class='card'><div id='cart'><p class='muted'>Carrinho vazio. Adicione um item do cardápio!</p></div>" +
+              "<p class='total' id='total'></p><button id='orderBtn' onclick='order()' style='display:none'>Finalizar pedido</button>" +
+              "<div id='track' style='display:none;margin-top:14px'><p><b>Status do pedido:</b> <span class='pill' id='status'>Recebido</span></p><div class='bar'><i id='barFill' style='width:8%'></i></div><p class='muted' id='eta'></p></div></div></main>" +
+              "<footer>Aplicativo gerado pelo Robô Criador IA</footer>";
+            const js = fmtBRL + "\n" + data + "\nvar cart=[];" +
+              "function add(i){cart.push(MENU[i]);render()}" +
+              "function render(){var el=document.getElementById('cart');if(!cart.length){el.innerHTML='<p class=muted>Carrinho vazio.</p>';document.getElementById('total').textContent='';document.getElementById('orderBtn').style.display='none';return}" +
+              "var t=0,h='';cart.forEach(function(it){t+=it.p;h+='<div class=row><span class=grow>'+it.n+'</span><b>'+fmt(it.p)+'</b></div>'});el.innerHTML=h;document.getElementById('total').textContent='Total: '+fmt(t);document.getElementById('orderBtn').style.display='block'}" +
+              "function order(){document.getElementById('track').style.display='block';var steps=[['Preparando seu pedido…',35,'Faltam ~25 min'],['Saiu para entrega 🛵',75,'Faltam ~10 min'],['Entregue! Bom apetite 🎉',100,'Pedido concluído']];var s=0;document.getElementById('status').textContent='Recebido';var iv=setInterval(function(){if(s>=steps.length){clearInterval(iv);return}document.getElementById('status').textContent=steps[s][0];document.getElementById('barFill').style.width=steps[s][1]+'%';document.getElementById('eta').textContent=steps[s][2];s++},2600)}";
+            return appShell(name, "#e2543e", body, js);
+          }
+        },
+        loja: {
+          label: "Loja / Vendas", icon: "bag",
+          desc: "Vitrine de produtos, carrinho e finalização da compra.",
+          features: "vitrine de produtos, carrinho de compras e botão de finalizar pelo WhatsApp",
+          build(name, biz) {
+            const prods = [["Camiseta Premium", 79.9], ["Tênis Confort", 249.9], ["Boné Aba Reta", 59.9], ["Mochila Urban", 189.9], ["Relógio Digital", 159.9], ["Óculos de Sol", 119.9]];
+            let cards = "", data = "var PROD=[";
+            prods.forEach((p, i) => {
+              data += (i ? "," : "") + "{n:'" + p[0] + "',p:" + p[1] + "}";
+              cards += "<div class='card row'><div class='grow'><b>" + p[0] + "</b><div class='muted'>Em estoque • envio rápido</div></div><span class='price'>R$ " + p[1].toFixed(2).replace(".", ",") + "</span><button onclick='add(" + i + ")'>Comprar</button></div>";
+            });
+            data += "];";
+            const body = "<header><h1>🛍️ " + name + "</h1><p>" + (biz || "Produtos selecionados com carinho para você") + "</p></header><main>" +
+              "<h2>Produtos em destaque</h2>" + cards +
+              "<h2>🛒 Carrinho</h2><div class='card'><div id='cart'><p class='muted'>Nenhum produto ainda.</p></div><p class='total' id='total'></p>" +
+              "<button id='buyBtn' onclick='buy()' style='display:none'>Finalizar compra pelo WhatsApp</button></div></main><footer>Aplicativo gerado pelo Robô Criador IA</footer>";
+            const js = fmtBRL + "\n" + data + "\nvar cart=[];" +
+              "function add(i){cart.push(PROD[i]);render()}" +
+              "function render(){var el=document.getElementById('cart');if(!cart.length){el.innerHTML='<p class=muted>Nenhum produto ainda.</p>';document.getElementById('total').textContent='';document.getElementById('buyBtn').style.display='none';return}var t=0,h='';cart.forEach(function(it){t+=it.p;h+='<div class=row><span class=grow>'+it.n+'</span><b>'+fmt(it.p)+'</b></div>'});el.innerHTML=h;document.getElementById('total').textContent='Total: '+fmt(t);document.getElementById('buyBtn').style.display='block'}" +
+              "function buy(){var msg='Olá! Quero comprar:%0A';cart.forEach(function(it){msg+='• '+it.n+' — '+fmt(it.p)+'%0A'});window.open('https://wa.me/?text='+msg,'_blank')}";
+            return appShell(name, "#7c3aed", body, js);
+          }
+        },
+        corrida: {
+          label: "Jogo de corrida", icon: "car",
+          desc: "Jogo jogável: desvie dos carros e some pontos.",
+          features: "o carro jogável, os carros rivais, a pontuação e o botão de reiniciar",
+          build(name) {
+            const body = "<header><h1>🏎️ " + name + "</h1><p>Desvie dos carros! Use as setas do teclado ou os botões na tela.</p></header><main style='text-align:center'>" +
+              "<p><b>Pontos:</b> <span id='score'>0</span> &nbsp;•&nbsp; <b>Recorde:</b> <span id='best'>0</span></p>" +
+              "<canvas id='game' width='300' height='440' style='background:#1b2340;border-radius:14px;max-width:100%;touch-action:none'></canvas>" +
+              "<div style='margin:12px 0'><button class='sec' onclick='move(-1)'>◀ Esquerda</button> <button onclick='start()'>▶ Começar</button> <button class='sec' onclick='move(1)'>Direita ▶</button></div>" +
+              "<p class='muted' id='msg'>Toque em Começar e boa corrida!</p></main><footer>Aplicativo gerado pelo Robô Criador IA</footer>";
+            const js = "var cv=document.getElementById('game'),ctx=cv.getContext('2d');var lane=1,enemies=[],score=0,best=0,run=false,speed=4,timer=null;" +
+              "function drawCar(x,y,c){ctx.fillStyle=c;ctx.fillRect(x+6,y,38,64);ctx.fillStyle='#bfe3ff';ctx.fillRect(x+12,y+12,26,14);ctx.fillRect(x+12,y+40,26,10);ctx.fillStyle='#111';ctx.fillRect(x,y+8,8,14);ctx.fillRect(x+42,y+8,8,14);ctx.fillRect(x,y+46,8,14);ctx.fillRect(x+42,y+46,8,14)}" +
+              "function draw(){ctx.fillStyle='#1b2340';ctx.fillRect(0,0,300,440);ctx.strokeStyle='#ffd94d';ctx.setLineDash([18,16]);ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(100,0);ctx.lineTo(100,440);ctx.moveTo(200,0);ctx.lineTo(200,440);ctx.stroke();ctx.setLineDash([]);enemies.forEach(function(e){drawCar(e.l*100+25,e.y,'#e2543e')});drawCar(lane*100+25,352,'#38b6ff')}" +
+              "function step(){if(!run)return;score+=1;document.getElementById('score').textContent=score;if(score%400===0)speed+=0.7;if(Math.random()<0.03&&enemies.length<3)enemies.push({l:Math.floor(Math.random()*3),y:-70});enemies.forEach(function(e){e.y+=speed});enemies=enemies.filter(function(e){return e.y<460});for(var i=0;i<enemies.length;i++){if(enemies[i].l===lane&&enemies[i].y>290&&enemies[i].y<410){gameOver();return}}draw()}" +
+              "function gameOver(){run=false;clearInterval(timer);if(score>best){best=score;document.getElementById('best').textContent=best}document.getElementById('msg').textContent='💥 Você bateu! Fez '+score+' pontos. Toque em Começar para tentar de novo.';draw()}" +
+              "function start(){lane=1;enemies=[];score=0;speed=4;run=true;document.getElementById('score').textContent='0';document.getElementById('msg').textContent='Correndo… desvie dos carros vermelhos!';clearInterval(timer);timer=setInterval(step,30);draw()}" +
+              "function move(d){lane=Math.max(0,Math.min(2,lane+d));draw()}" +
+              "document.addEventListener('keydown',function(e){if(e.key==='ArrowLeft')move(-1);if(e.key==='ArrowRight')move(1)});draw();";
+            return appShell(name, "#14479e", body, js);
+          }
+        },
+        calculadora: {
+          label: "Calculadora", icon: "calc",
+          desc: "Calculadora completa com as quatro operações.",
+          features: "o visor, os botões de números e as quatro operações",
+          build(name) {
+            let btns = "";
+            ["7","8","9","/","4","5","6","*","1","2","3","-","0",".","=","+"].forEach(k => {
+              btns += "<button onclick=\"press('" + k + "')\" style='padding:18px;font-size:20px;border-radius:12px'>" + (k === "*" ? "×" : k === "/" ? "÷" : k) + "</button>";
+            });
+            const body = "<header><h1>🧮 " + name + "</h1><p>Calculadora pronta para usar</p></header><main style='max-width:360px'>" +
+              "<div class='card'><input id='disp' readonly style='text-align:right;font-size:26px;font-weight:800' value='0' />" +
+              "<div style='display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:12px'>" + btns + "</div>" +
+              "<button class='sec' onclick='clr()' style='width:100%;margin-top:9px;padding:13px'>Limpar (C)</button></div></main><footer>Aplicativo gerado pelo Robô Criador IA</footer>";
+            const js = "var expr='';function press(k){if(k==='='){try{expr=String(eval(expr)||0);document.getElementById('disp').value=expr}catch(e){expr='';document.getElementById('disp').value='Erro'}}else{expr+=k;document.getElementById('disp').value=expr}}function clr(){expr='';document.getElementById('disp').value='0'}";
+            return appShell(name, "#0e7490", body, js);
+          }
+        },
+        tarefas: {
+          label: "Lista de tarefas", icon: "check",
+          desc: "Adicione, conclua e apague tarefas do dia.",
+          features: "adicionar tarefas, marcar como concluídas e apagar as antigas",
+          build(name) {
+            const body = "<header><h1>✅ " + name + "</h1><p>Organize seu dia sem esquecer de nada</p></header><main>" +
+              "<div class='card'><div class='row'><input id='inp' placeholder='Nova tarefa…' /><button onclick='add()'>Adicionar</button></div></div>" +
+              "<div id='list'></div><p class='muted' id='count'></p></main><footer>Aplicativo gerado pelo Robô Criador IA</footer>";
+            const js = "var tasks=[];function add(){var v=document.getElementById('inp').value.trim();if(!v)return;tasks.push({t:v,d:false});document.getElementById('inp').value='';render()}" +
+              "function tog(i){tasks[i].d=!tasks[i].d;render()}function del(i){tasks.splice(i,1);render()}" +
+              "function render(){var h='';tasks.forEach(function(x,i){h+='<div class=card><div class=row><input type=checkbox style=width:20px;height:20px;flex:none '+(x.d?'checked':'')+' onclick=tog('+i+')><span class=grow style='+(x.d?'text-decoration:line-through;color:#8a94ad':'')+'>'+x.t+'</span><button class=sec onclick=del('+i+')>Apagar</button></div></div>'});document.getElementById('list').innerHTML=h||'<p class=muted>Nenhuma tarefa ainda. Adicione a primeira!</p>';var left=tasks.filter(function(x){return !x.d}).length;document.getElementById('count').textContent=tasks.length?left+' tarefa(s) pendente(s) de '+tasks.length:''}" +
+              "document.getElementById('inp').addEventListener('keydown',function(e){if(e.key==='Enter')add()});render();";
+            return appShell(name, "#0a8f4d", body, js);
+          }
+        },
+        financas: {
+          label: "Controle financeiro", icon: "money",
+          desc: "Registre ganhos e gastos e veja o saldo.",
+          features: "registrar ganhos e gastos, ver o saldo e o gráfico do mês",
+          build(name) {
+            const body = "<header><h1>💰 " + name + "</h1><p>Seu dinheiro sob controle</p></header><main>" +
+              "<div class='card' style='text-align:center'><p class='muted' style='margin:0'>Saldo atual</p><p class='total' id='balance' style='font-size:30px;margin:6px 0'>R$ 0,00</p></div>" +
+              "<div class='card'><div class='row'><input id='desc' placeholder='Descrição (ex.: venda de topo de bolo)' /></div>" +
+              "<div class='row' style='margin-top:9px'><input id='val' type='number' step='0.01' placeholder='Valor' /><select id='kind' style='flex:0 1 140px'><option value='in'>Ganho</option><option value='out'>Gasto</option></select><button onclick='add()'>Lançar</button></div><p class='muted' id='msg' style='margin:8px 0 0'></p></div>" +
+              "<h2>Movimentações</h2><div id='list'></div></main><footer>Aplicativo gerado pelo Robô Criador IA</footer>";
+            const js = fmtBRL + "\nvar moves=[];function add(){var d=document.getElementById('desc').value.trim();var v=parseFloat(document.getElementById('val').value);var k=document.getElementById('kind').value;if(!d||isNaN(v)||v<=0){document.getElementById('msg').textContent='Preencha a descrição e um valor válido.';return}document.getElementById('msg').textContent='';moves.push({d:d,v:k==='in'?v:-v});document.getElementById('desc').value='';document.getElementById('val').value='';render()}" +
+              "function render(){var t=0,h='';moves.slice().reverse().forEach(function(m){t+=m.v;h+='<div class=card><div class=row><span class=grow>'+m.d+'</span><b style=color:'+(m.v>=0?'#0a8f4d':'#d43a2a')+'>'+fmt(m.v)+'</b></div></div>'});var tot=moves.reduce(function(a,m){return a+m.v},0);document.getElementById('balance').textContent=fmt(tot);document.getElementById('list').innerHTML=h||'<p class=muted>Nenhum lançamento ainda.</p>'}render();";
+            return appShell(name, "#b45309", body, js);
+          }
+        },
+        site: {
+          label: "Site para negócio", icon: "globe",
+          desc: "Página de apresentação com serviços e contato.",
+          features: "a apresentação do negócio, a lista de serviços e o botão de contato no WhatsApp",
+          build(name, biz) {
+            const body = "<header style='padding:44px 18px'><h1>" + name + "</h1><p>" + (biz || "Qualidade e carinho em cada detalhe") + "</p>" +
+              "<p style='margin-top:16px'><a href='https://wa.me/?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20saber%20mais.' target='_blank' style='background:#22c55e;color:#fff;padding:13px 22px;border-radius:99px;font-weight:800;text-decoration:none'>💬 Chamar no WhatsApp</a></p></header><main>" +
+              "<h2>Nossos serviços</h2>" +
+              "<div class='card'><b>✨ Atendimento personalizado</b><p class='muted'>Cada cliente é único: ouvimos sua ideia e criamos do seu jeito.</p></div>" +
+              "<div class='card'><b>🎨 Criação sob encomenda</b><p class='muted'>Produzimos com materiais de qualidade e acabamento caprichado.</p></div>" +
+              "<div class='card'><b>🚀 Entrega combinada</b><p class='muted'>Prazo combinado com você, sem surpresas.</p></div>" +
+              "<h2>Sobre nós</h2><div class='card'><p>" + name + " nasceu para transformar ideias em realidade. Fale com a gente e peça seu orçamento sem compromisso!</p></div></main><footer>Site gerado pelo Robô Criador IA</footer>";
+            return appShell(name, "#14479e", body, "/* Página de apresentação — sem scripts necessários. */");
+          }
+        },
+        generico: {
+          label: "Aplicativo personalizado", icon: "app",
+          desc: "Estrutura completa com início, recursos e contato.",
+          features: "a tela inicial, a área principal de uso e a tela de contato",
+          build(name, biz) {
+            const body = "<header><h1>📱 " + name + "</h1><p>" + (biz || "Seu aplicativo criado pelo Robô Criador IA") + "</p></header><main>" +
+              "<h2>Começar</h2><div class='card'><p>Bem-vindo(a) ao <b>" + name + "</b>! Este é o seu aplicativo funcionando. Use os botões abaixo para testar as telas.</p>" +
+              "<div class='row'><button onclick='go(1)'>Área principal</button><button class='sec' onclick='go(2)'>Contato</button></div></div>" +
+              "<div id='screen'></div></main><footer>Aplicativo gerado pelo Robô Criador IA</footer>";
+            const js = "function go(n){var el=document.getElementById('screen');if(n===1){el.innerHTML='<div class=card><h3 style=margin-top:0>Área principal</h3><p class=muted>Aqui fica a função principal do seu app. Toque no botão para testar a interação:</p><button onclick=this.textContent=\"Funcionando! ✅\">Testar função</button></div>'}else{el.innerHTML='<div class=card><h3 style=margin-top:0>Contato</h3><p class=muted>Fale com a gente:</p><a href=https://wa.me/ target=_blank><button>Chamar no WhatsApp</button></a></div>'}}";
+            return appShell(name, "#14479e", body, js);
+          }
+        }
+      };
+
+      const TPL_ICONS = {
+        bike: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17" r="3.5"/><circle cx="18.5" cy="17" r="3.5"/><path d="M5.5 17 9 9h6l3.5 8M9 9 7.5 5H5M15 9l-1.5-4h-2"/></svg>',
+        bag: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 12a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8z"/><path d="M8.5 10.5V6.5a3.5 3.5 0 0 1 7 0v4"/></svg>',
+        car: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v2.5A1.5 1.5 0 0 0 5.5 20h1A1.5 1.5 0 0 0 8 18.5v-1h8v1A1.5 1.5 0 0 0 17.5 20h1A1.5 1.5 0 0 0 20 18.5V16"/><path d="M4 16l1.7-5.2A2 2 0 0 1 7.6 9.4h8.8a2 2 0 0 1 1.9 1.4L20 16M4 16h16"/><circle cx="7.5" cy="13.5" r=".8" fill="currentColor"/><circle cx="16.5" cy="13.5" r=".8" fill="currentColor"/></svg>',
+        calc: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M8.5 6.5h7M8.5 11h.01M12 11h.01M15.5 11h.01M8.5 14.5h.01M12 14.5h.01M15.5 14.5h.01M8.5 18h.01M12 18h.01M15.5 18h.01"/></svg>',
+        check: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3.5" width="16" height="17" rx="2.5"/><path d="m8.5 12.5 2.4 2.4L15.8 10"/></svg>',
+        money: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v10M15 9.2c-.6-.7-1.6-1-3-1-1.7 0-3 .8-3 2 0 2.9 6 1.6 6 4 0 1.2-1.3 2-3 2-1.4 0-2.4-.4-3-1.1"/></svg>',
+        globe: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.8 5.6 3.8 9S14.5 18.5 12 21c-2.5-2.5-3.8-5.6-3.8-9S9.5 5.5 12 3z"/></svg>',
+        app: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>'
+      };
+
+      /* Detecta o tipo de app a partir da descrição */
+      function detectType(text) {
+        const t = norm(text);
+        if (/delivery|comida|restaurante|pizza|lanche|acai|ifood/.test(t)) return "delivery";
+        if (/corrida|carro|racing|jogo/.test(t)) return "corrida";
+        if (/calculadora|calculo/.test(t)) return "calculadora";
+        if (/tarefa|afazeres|agenda|lista de/.test(t)) return "tarefas";
+        if (/financa|dinheiro|gasto|despesa|orcamento|controle financeiro/.test(t)) return "financas";
+        if (/\bsite\b|pagina|loja online|meu negocio|minha loja/.test(t) && !/aplicativo|app/.test(t)) return "site";
+        if (/venda|loja|vender|produto|comercio|e-?commerce/.test(t)) return "loja";
+        return "generico";
+      }
+      function extractName(text, type) {
+        let m = norm(text).match(/(?:de|para|do|da|chamado|chamada)\s+(.+)$/);
+        let raw = m ? m[1] : "";
+        raw = raw.replace(/^(um|uma|o|a)\s+/, "").replace(/\b(aplicativo|app|site|jogo|pagina)\b/g, "").trim();
+        if (!raw || raw.length < 3 || /^(tudo|isso|ele|ela)$/.test(raw)) {
+          return { delivery: "Delivery Sabor", loja: "Minha Loja", corrida: "Corrida Turbo", calculadora: "Calculadora Pro", tarefas: "Minhas Tarefas", financas: "Meu Dinheiro", site: "Meu Negócio", generico: "Meu Aplicativo" }[type];
+        }
+        return cap(raw.split(" ").slice(0, 4).join(" "));
+      }
+
+      /* ---------------- Projetos da sessão ---------------- */
+      const projects = [];
+      let currentProject = null;
+      const projGrid = $("#projGrid"), projEmpty = $("#projEmpty"), projCount = $("#projCount");
+
+      function checkCode(code) {
+        const issues = [];
+        if (!/<!doctype html>/i.test(code)) issues.push("Faltava a declaração DOCTYPE — corrigida.");
+        if (!/<\/html>/i.test(code)) issues.push("Faltava o fechamento </html> — corrigido.");
+        const open = (code.match(/<div/g) || []).length, close = (code.match(/<\/div>/g) || []).length;
+        if (open !== close) issues.push("Divs desbalanceadas (" + open + " abertas, " + close + " fechadas).");
+        if (!/<meta name="viewport"/.test(code)) issues.push("Faltava a meta viewport para celular.");
+        return issues;
+      }
+
+      function renderProjects() {
+        projGrid.innerHTML = "";
+        projEmpty.style.display = projects.length ? "none" : "block";
+        projCount.style.display = projects.length ? "inline-block" : "none";
+        projCount.textContent = projects.length;
+        projects.slice().reverse().forEach(p => {
+          const card = document.createElement("div"); card.className = "proj";
+          const pic = document.createElement("div"); pic.className = "pic"; pic.innerHTML = TPL_ICONS[TEMPLATES[p.type].icon] || TPL_ICONS.app;
+          const h = document.createElement("h3"); h.textContent = p.name;
+          const d = document.createElement("p"); d.textContent = TEMPLATES[p.type].desc;
+          const meta = document.createElement("p"); meta.className = "meta"; meta.textContent = "Criado às " + p.when + " • arquivo HTML pronto";
+          const row = document.createElement("div"); row.className = "row";
+          const bOpen = document.createElement("button"); bOpen.className = "btn primary"; bOpen.textContent = "Abrir prévia";
+          bOpen.addEventListener("click", () => openPreview(p));
+          const bDl = document.createElement("button"); bDl.className = "btn"; bDl.textContent = "Baixar";
+          bDl.addEventListener("click", () => { download(fileName(p.name) + ".html", p.code); toast("Arquivo do app baixado: " + fileName(p.name) + ".html"); });
+          const bDel = document.createElement("button"); bDel.className = "btn ghost"; bDel.textContent = "Excluir";
+          bDel.addEventListener("click", () => {
+            const i = projects.indexOf(p); if (i >= 0) projects.splice(i, 1);
+            if (currentProject === p) currentProject = projects[projects.length - 1] || null;
+            renderProjects(); toast("Projeto excluído desta sessão.");
+          });
+          row.appendChild(bOpen); row.appendChild(bDl); row.appendChild(bDel);
+          card.appendChild(pic); card.appendChild(h); card.appendChild(d); card.appendChild(meta); card.appendChild(row);
+          projGrid.appendChild(card);
+        });
+      }
+
+      const previewFrame = $("#previewFrame"), previewEmpty = $("#previewEmpty"), codeBox = $("#codeBox");
+      const codeToggleBtn = $("#codeToggleBtn"), openAppBtn = $("#openAppBtn"), downloadAppBtn = $("#downloadAppBtn");
+      function openPreview(p) {
+        currentProject = p;
+        showView("criar");
+        previewEmpty.style.display = "none";
+        previewFrame.style.display = "block";
+        previewFrame.srcdoc = p.code;
+        codeBox.textContent = p.code;
+        codeToggleBtn.disabled = false; openAppBtn.disabled = false; downloadAppBtn.disabled = false;
+        $("#ideaInput").value = p.idea;
+      }
+      codeToggleBtn.addEventListener("click", () => {
+        const show = codeBox.style.display === "none";
+        codeBox.style.display = show ? "block" : "none";
+        codeToggleBtn.textContent = show ? "Ocultar código" : "Ver código";
+      });
+      openAppBtn.addEventListener("click", () => {
+        if (!currentProject) return;
+        const blob = new Blob([currentProject.code], { type: "text/html" });
+        window.open(URL.createObjectURL(blob), "_blank");
+      });
+      downloadAppBtn.addEventListener("click", () => {
+        if (!currentProject) return;
+        download(fileName(currentProject.name) + ".html", currentProject.code);
+        toast("App baixado! Abra o arquivo " + fileName(currentProject.name) + ".html no celular ou no computador.");
+      });
+
+      /* ---------------- Pipeline de criação ---------------- */
+      const pipelineItems = $$("#pipeline [data-step]");
+      const progressFill = $("#progressFill");
+      const sleep = ms => new Promise(r => setTimeout(r, ms));
+      async function runCreation(ideaText, type, name) {
+        showView("criar");
+        setState("thinking", "think");
+        pipelineItems.forEach(li => { li.className = ""; });
+        progressFill.style.width = "0%";
+        previewEmpty.style.display = "block"; previewEmpty.innerHTML = "Criando seu aplicativo…";
+        previewFrame.style.display = "none";
+        codeToggleBtn.disabled = true; openAppBtn.disabled = true; downloadAppBtn.disabled = true;
+
+        const code = TEMPLATES[type].build(name, ideaText);
+        const lines = code.split("\n");
+        codeBox.style.display = "block"; codeBox.textContent = "";
+
+        for (let i = 0; i < pipelineItems.length; i++) {
+          pipelineItems.forEach((li, j) => { if (j < i) { li.className = "done"; li.querySelector(".st").textContent = "✓"; } });
+          pipelineItems[i].className = "doing";
+          progressFill.style.width = Math.round(((i + 1) / pipelineItems.length) * 100) + "%";
+          if (i === 3) {
+            const chunk = Math.ceil(lines.length / 14);
+            for (let l = 0; l < lines.length; l += chunk) {
+              codeBox.textContent = lines.slice(0, l + chunk).join("\n");
+              codeBox.scrollTop = codeBox.scrollHeight;
+              await sleep(85);
+            }
+          } else if (i === 4) {
+            await sleep(850);
+          } else {
+            await sleep(680);
+          }
+        }
+        pipelineItems.forEach(li => { li.className = "done"; li.querySelector(".st").textContent = "✓"; });
+
+        const issues = checkCode(code);
+        const proj = { name, type, code, idea: ideaText, when: nowTime() };
+        projects.push(proj);
+        renderProjects();
+        openPreview(proj);
+        setState("idle", "happy");
+        const report = issues.length ? "Encontrei e corrigi " + issues.length + " detalhe(s) no código durante o teste." : "Passei nos testes de estrutura: código completo e válido.";
+        robotSay("Pronto! Criei o aplicativo " + name + " e já verifiquei: " + report + " A prévia está funcionando aqui ao lado — você pode testar, baixar o arquivo do app ou me pedir mudanças por voz, tipo: “Robô, muda a cor do aplicativo”.");
+        return proj;
+      }
+
+      /* Modelos clicáveis */
+      const tplGrid = $("#tplGrid");
+      let selectedTpl = null;
+      Object.keys(TEMPLATES).forEach(key => {
+        const t = TEMPLATES[key];
+        const b = document.createElement("button"); b.className = "tpl"; b.type = "button";
+        b.innerHTML = (TPL_ICONS[t.icon] || TPL_ICONS.app) + "<span><b>" + t.label + "</b><span>" + t.desc + "</span></span>";
+        b.addEventListener("click", () => {
+          $$(".tpl", tplGrid).forEach(x => x.classList.remove("sel"));
+          b.classList.add("sel"); selectedTpl = key;
+          if (!$("#ideaInput").value.trim()) $("#ideaInput").value = t.label;
+        });
+        tplGrid.appendChild(b);
+      });
+      $("#createBtn").addEventListener("click", async () => {
+        const idea = $("#ideaInput").value.trim();
+        if (!idea && !selectedTpl) { toast("Descreva seu aplicativo ou escolha um modelo para começar."); $("#ideaInput").focus(); return; }
+        const type = selectedTpl || detectType(idea);
+        const name = extractName(idea || TEMPLATES[type].label, type);
+        $("#createBtn").disabled = true;
+        await runCreation(idea || TEMPLATES[type].label, type, name);
+        $("#createBtn").disabled = false;
+      });
+
+      /* ================================================================
+         CÉREBRO — interpreta comandos em português brasileiro
+         ================================================================ */
+      let pendingCreate = null;
+      let pendingWhats = null;
+
+      function askFeatures(type, name, idea) {
+        pendingCreate = { type, name, idea };
+        setState("idle", "curious");
+        robotSay("Claro! Vou criar " + (type === "site" ? "o site" : "um aplicativo") + " " + name + ". Você quer que eu coloque " + TEMPLATES[type].features + "? Responda “sim, coloca tudo” ou “só o básico”.");
+      }
+
+      function handleCommand(raw) {
+        const text = (raw || "").trim();
+        if (!text) return;
+        addMsg("user", text);
+        $("#cmdInput").value = ""; const ci2 = $("#cmdInput2"); if (ci2) ci2.value = "";
+        const t = norm(text).replace(/^(robo|bolinha|lua)[,!:.\s]+/, "");
+
+        if (pendingCreate) {
+          if (/\b(sim|pode|coloca|quero|tudo|isso|bora|vamos|ok|beleza)\b/.test(t) || t.length < 30) {
+            const pc = pendingCreate; pendingCreate = null;
+            robotSay("Entendi! Vou criar as telas e começar a programação agora.");
+            setTimeout(() => runCreation(pc.idea, pc.type, pc.name), 650);
+            return;
+          }
+          pendingCreate = null;
+        }
+        if (pendingWhats && pendingWhats.stage === "askText") {
+          pendingWhats = { stage: "confirm", text };
+          setState("auth");
+          robotSay("Vou preparar a mensagem: “" + text + "”. Posso abrir o WhatsApp com ela pronta?");
+          addConfirmCard("Enviar pelo WhatsApp a mensagem: “" + text + "”?",
+            () => { window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank"); setState("idle"); robotSay("Abri o WhatsApp com a mensagem pronta. É só escolher o contato e tocar em enviar lá."); pendingWhats = null; },
+            () => { setState("idle"); robotSay("Tudo bem, cancelei o envio. A mensagem não foi enviada."); pendingWhats = null; });
+          return;
+        }
+
+        setState("thinking", "think");
+        setTimeout(() => route(t, text), 420);
+      }
+
+      function route(t, original) {
+        if (/^(oi|ola|eae|hey|bom dia|boa tarde|boa noite)\b/.test(t)) {
+          robotSay("Olá! Que bom falar com você. Quer criar um aplicativo, fazer uma pesquisa ou abrir alguma coisa?", "happy"); return;
+        }
+        if (/quem (e|eh) voce|seu nome|se apresent/.test(t)) {
+          robotSay("Eu sou o Robô Criador IA, seu assistente esférico: eu falo, entendo sua voz, crio aplicativos de verdade com código e prévia, faço pesquisas, abro páginas e organizo lembretes. É só pedir!", "happy"); return;
+        }
+        if (/o que voce (pode|sabe) fazer|o que voce faz|suas funcoes|ajuda|me ajuda/.test(t)) {
+          robotSay("Eu posso: criar aplicativos e sites por comando de voz (com código, teste e download), abrir o YouTube e páginas, fazer pesquisas, preparar mensagens no WhatsApp com sua confirmação, criar documentos, lembrar você de tarefas e corrigir erros dos apps que criei. Experimente: “Robô, cria um jogo de corrida”."); return;
+        }
+        if (/que horas|horas sao|que dia (e|eh) hoje|data de hoje/.test(t)) {
+          const d = new Date();
+          const df = d.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+          robotSay("Agora são " + d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) + " de " + df + "."); return;
+        }
+        if (/obrigad/.test(t)) { robotSay("Por nada! É um prazer ajudar. Se precisar de mais alguma coisa, é só chamar.", "happy"); return; }
+        if (/piada|me faz rir/.test(t)) { robotSay("Por que o robô foi ao médico? Porque ele estava com um vírus… de computador! Espero ter arrancado um sorriso. Quer criar alguma coisa agora?", "happy"); return; }
+
+        if (/\b(cria|criar|crie|faz|fazer|faca|desenvolve|desenvolver|monta|montar|constroi|gerar|gera)\b/.test(t) && /\b(aplicativo|app|site|jogo|pagina|sistema|loja|delivery|calculadora)\b/.test(t)) {
+          const type = detectType(t);
+          const name = extractName(t, type);
+          askFeatures(type, name, original);
+          return;
+        }
+        if (/continua|continuar|ultimo projeto|projeto de ontem|meu aplicativo|meus apps|meus projetos/.test(t)) {
+          if (projects.length) { openPreview(projects[projects.length - 1]); robotSay("Reabri seu projeto mais recente: " + projects[projects.length - 1].name + ". A prévia está na tela — quer mudar alguma coisa nele?"); }
+          else robotSay("Ainda não temos projetos nesta sessão. Quando você criar um aplicativo comigo, ele aparece em “Meus Apps” e eu continuo daqui. Quer criar um agora?", "curious");
+          return;
+        }
+        if (/corrig|erro|testa|testar|verifica|conserta/.test(t)) {
+          if (!projects.length) { robotSay("Ainda não há aplicativo para verificar nesta sessão. Crie um primeiro — depois eu testo e corrijo para você.", "curious"); return; }
+          const p = projects[projects.length - 1];
+          const issues = checkCode(p.code);
+          setState("idle", "think");
+          robotSay(issues.length ? "Verifiquei o " + p.name + " e encontrei isto: " + issues.join(" ") + " A estrutura principal está íntegra e a prévia continua funcionando." : "Verifiquei o " + p.name + " por completo: DOCTYPE presente, HTML fechado corretamente, divs balanceadas e meta de celular OK. Nenhum erro estrutural encontrado — o app está íntegro!");
+          return;
+        }
+        if (/(muda|troca|altera).*(cor)/.test(t) && currentProject) {
+          const colors = { rosa: "#db2777", roxo: "#7c3aed", verde: "#0a8f4d", azul: "#14479e", vermelho: "#d43a2a", laranja: "#ea580c", preto: "#1f2430" };
+          const found = Object.keys(colors).find(c => t.includes(c));
+          if (found) {
+            currentProject.code = currentProject.code.replace(/background:(#[0-9a-fA-F]{6})/, "background:" + colors[found]);
+            currentProject.code = currentProject.code.replace(new RegExp("(color:)(#[0-9a-fA-F]{6})", "g"), "$1" + colors[found]);
+            openPreview(currentProject);
+            robotSay("Pronto! Mudei a cor principal do " + currentProject.name + " para " + found + ". A prévia já atualizou — olha lá!");
+            return;
+          }
+          robotSay("Qual cor você quer? Posso usar rosa, roxo, verde, azul, vermelho, laranja ou preto."); return;
+        }
+        if (/\b(abre|abrir|abra|acessa|acessar)\b/.test(t)) {
+          const sites = [
+            [/youtube/, "https://www.youtube.com", "o YouTube"],
+            [/google/, "https://www.google.com", "o Google"],
+            [/whatsapp/, "https://web.whatsapp.com", "o WhatsApp Web"],
+            [/gmail|e-?mail/, "https://mail.google.com", "o Gmail"],
+            [/instagram/, "https://www.instagram.com", "o Instagram"],
+            [/tiktok/, "https://www.tiktok.com", "o TikTok"],
+            [/facebook/, "https://www.facebook.com", "o Facebook"]
+          ];
+          for (const [re, url, label] of sites) {
+            if (re.test(t)) {
+              const go = () => { window.open(url, "_blank"); setState("idle"); robotSay("Abri " + label + " em uma nova aba para você."); };
+              if (settings.confirm) { setState("auth"); addConfirmCard("Abrir " + label + " em uma nova aba?", go, () => { setState("idle"); robotSay("Tudo bem, não abri nada."); }); robotSay("Quer que eu abra " + label + "? Confirme aqui embaixo."); }
+              else go();
+              return;
+            }
+          }
+          robotSay("Qual página você quer abrir? Eu conheço YouTube, Google, WhatsApp, Gmail, Instagram, TikTok e Facebook.", "curious"); return;
+        }
+        if (/\b(pesquisa|pesquisar|busca|buscar|procura|procurar|pesquise)\b/.test(t)) {
+          let q = t.replace(/.*(pesquisa|pesquisar|busca|buscar|procura|procurar|pesquise)(r)?\s*(sobre|por|de)?\s*/, "").trim();
+          if (!q || q.length < 2) { robotSay("O que você quer que eu pesquise? Pode dizer, por exemplo: “Robô, pesquisa receitas de bolo de chocolate”.", "curious"); return; }
+          const go = () => { window.open("https://www.google.com/search?q=" + encodeURIComponent(q), "_blank"); setState("idle"); robotSay("Pesquisei por “" + q + "” e abri os resultados em uma nova aba."); };
+          if (settings.confirm) { setState("auth"); addConfirmCard("Pesquisar no Google por “" + q + "”?", go, () => { setState("idle"); robotSay("Pesquisa cancelada."); }); robotSay("Vou pesquisar “" + q + "” no Google. Confirma?"); }
+          else go();
+          return;
+        }
+        if (/\b(envia|enviar|manda|mandar)\b/.test(t) || (/mensagem/.test(t) && /whats|zap|envia|manda/.test(t))) {
+          pendingWhats = { stage: "askText" };
+          robotSay("Claro! O que você quer escrever na mensagem? Fale ou digite o texto — antes de abrir o WhatsApp, eu peço sua confirmação.");
+          setState("idle", "curious"); return;
+        }
+        if (/lembrete|me lembra|lembrar/.test(t)) {
+          const txt = original.replace(/.*?(lembrete|lembrar|lembra)\s*(de|pra|para)?\s*/i, "") || original;
+          addReminder(txt, 5);
+          robotSay("Lembrete criado: “" + txt + "”. Ele aparece na aba Ferramentas e eu te aviso aqui na página.");
+          return;
+        }
+        if (/\b(baixa|baixar|download|salva|salvar|exporta)\b/.test(t)) {
+          if (currentProject) { download(fileName(currentProject.name) + ".html", currentProject.code); robotSay("Baixei o arquivo do " + currentProject.name + ". É um HTML completo: abra no celular ou no computador e o app funciona."); }
+          else robotSay("Ainda não há um aplicativo aberto para baixar. Crie um primeiro — aí eu gero o arquivo para você.", "curious");
+          return;
+        }
+        const fallbacks = [
+          "Entendi! Ainda estou aprendendo comandos novos, mas nisso eu sou ótimo: criar aplicativos e sites por voz, pesquisar, abrir páginas e organizar lembretes. Quer tentar “Robô, cria um aplicativo de vendas”?",
+          "Boa! Posso transformar isso em ação: se for um aplicativo, descreva a ideia que eu construo com código e prévia. Se for pesquisa ou abrir uma página, é só falar o destino.",
+          "Anotado. Minhas especialidades são criar apps, corrigir erros deles, pesquisar e abrir páginas. O que vamos fazer agora?"
+        ];
+        robotSay(fallbacks[Math.floor(Math.random() * fallbacks.length)], "curious");
+      }
+
+      /* ---------------- Formulários de comando ---------------- */
+      $("#cmdForm").addEventListener("submit", e => { e.preventDefault(); handleCommand($("#cmdInput").value); });
+      $("#cmdForm2").addEventListener("submit", e => { e.preventDefault(); handleCommand($("#cmdInput2").value); });
+
+      /* ---------------- Ferramentas ---------------- */
+      const reminders = [];
+      function addReminder(text, minutes) {
+        const item = { text, at: Date.now() + minutes * 60000, minutes };
+        reminders.push(item);
+        renderReminders();
+        setTimeout(() => {
+          toast("⏰ Lembrete: " + text);
+          robotSay("Lembrete: " + text, "surprised");
+          renderReminders();
+        }, minutes * 60000);
+      }
+      function renderReminders() {
+        const ul = $("#remList"); ul.innerHTML = "";
+        reminders.forEach(r => {
+          const li = document.createElement("li");
+          const s = document.createElement("span"); s.textContent = r.text; li.appendChild(s);
+          const tag = document.createElement("span"); tag.className = "tag";
+          tag.textContent = r.at > Date.now() ? "em " + r.minutes + " min • " + new Date(r.at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "avisado ✓";
+          li.appendChild(tag); ul.appendChild(li);
+        });
+        if (!reminders.length) { const li = document.createElement("li"); li.textContent = "Nenhum lembrete nesta sessão."; li.style.color = "var(--muted)"; ul.appendChild(li); }
+      }
+      renderReminders();
+      $("#remBtn").addEventListener("click", () => {
+        const txt = $("#remText").value.trim(); const min = parseInt($("#remMin").value, 10) || 5;
+        if (!txt) { toast("Escreva o lembrete primeiro."); return; }
+        addReminder(txt, min); $("#remText").value = "";
+        robotSay("Lembrete criado para daqui a " + min + " minuto(s): " + txt);
+      });
+      $$("[data-tool]").forEach(b => b.addEventListener("click", () => {
+        const k = b.dataset.tool;
+        if (k === "youtube") handleCommand("Robô, abre o YouTube");
+        if (k === "whats") handleCommand("Robô, enviar uma mensagem no WhatsApp");
+        if (k === "doc") { $("#docPanel").style.display = "block"; $("#docPanel").scrollIntoView({ behavior: "smooth" }); }
+        if (k === "fix") handleCommand("Robô, corrige os erros do meu aplicativo");
+        if (k === "continue") handleCommand("Robô, continua o meu projeto");
+        if (k === "time") handleCommand("Robô, que horas são?");
+      }));
+      function doSearch() {
+        const q = $("#searchInput").value.trim();
+        if (!q) { toast("Digite o que quer pesquisar."); return; }
+        handleCommand("Robô, pesquisa " + q);
+      }
+      $("#searchBtn").addEventListener("click", doSearch);
+      $("#searchInput").addEventListener("keydown", e => { if (e.key === "Enter") doSearch(); });
+      $("#docClose").addEventListener("click", () => { $("#docPanel").style.display = "none"; });
+      $("#docDownload").addEventListener("click", () => {
+        const title = $("#docTitle").value.trim() || "Documento";
+        const bodyTxt = $("#docBody").value.trim();
+        if (!bodyTxt) { toast("Escreva o texto do documento primeiro."); return; }
+        const html = "<!doctype html><html lang='pt-BR'><head><meta charset='utf-8'><title>" + escapeHtml(title) + "</title><style>body{font-family:Georgia,serif;max-width:680px;margin:40px auto;padding:0 20px;line-height:1.7;color:#222}h1{font-size:28px}</style></head><body><h1>" + escapeHtml(title) + "</h1><p>" + escapeHtml(bodyTxt).replace(/\n/g, "</p><p>") + "</p></body></html>";
+        download(fileName(title) + ".html", html);
+        robotSay("Documento “" + title + "” criado e baixado. Ele abre em qualquer navegador ou editor de texto.");
+      });
+
+      /* ---------------- Configurações ---------------- */
+      $("#setVoice").addEventListener("change", e => { settings.voice = e.target.checked; $("#soundToggle").classList.toggle("off", !settings.voice); if (!settings.voice && "speechSynthesis" in window) speechSynthesis.cancel(); });
+      $("#setRate").addEventListener("input", e => { settings.rate = parseFloat(e.target.value); });
+      $("#setConfirm").addEventListener("change", e => { settings.confirm = e.target.checked; });
+      $("#soundToggle").addEventListener("click", () => {
+        settings.voice = !settings.voice;
+        $("#setVoice").checked = settings.voice;
+        $("#soundToggle").classList.toggle("off", !settings.voice);
+        if (settings.voice) robotSay("Voz ligada! Agora eu falo com você."); else if ("speechSynthesis" in window) speechSynthesis.cancel();
+      });
+      function setMini(on) {
+        document.body.classList.toggle("mini", on);
+        $("#floatBall").classList.toggle("show", on);
+        $("#setMini").checked = on;
+      }
+      $("#setMini").addEventListener("change", e => setMini(e.target.checked));
+      $("#miniToggle").addEventListener("click", () => setMini(true));
+      $("#floatBall").addEventListener("click", () => { setMini(false); toast("Robô expandido!"); });
+      $$(".swatch").forEach(sw => sw.addEventListener("click", () => {
+        $$(".swatch").forEach(x => x.classList.remove("sel")); sw.classList.add("sel");
+        accent = sw.dataset.accent;
+        document.documentElement.style.setProperty("--neon", accent);
+        document.documentElement.style.setProperty("--neon-strong", accent);
+        if (currentState === "idle") setState("idle");
+        toast("Cor das luzes atualizada!");
+      }));
+
+      /* ---------------- Saudação inicial ---------------- */
+      renderProjects();
+      setState("idle", "happy");
+      addMsg("bot", "Olá! Eu sou o seu Robô Criador IA. Fale o que você quer e eu faço para você! Toque no microfone ou experimente: “Robô, cria um aplicativo de delivery”.");
+      setTimeout(() => { if (settings.voice) speak("Olá! Eu sou o seu Robô Criador IA. Fale o que você quer e eu faço para você!"); }, 600);
+    </script>
+  </body>
+</html>
