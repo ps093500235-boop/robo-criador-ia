@@ -328,6 +328,28 @@
       .reminder-list li{display:flex;gap:10px;align-items:center;background:rgba(8,22,48,.75);border:1px solid var(--line-soft);border-radius:12px;padding:10px 14px;font-weight:600}
       .reminder-list .tag{margin-left:auto;font-size:12.5px;color:var(--cyan);font-weight:700}
 
+      /* ---------- Social buttons & new tool panels ---------- */
+      .social-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+      .social-btn{display:flex;align-items:center;gap:13px;padding:18px;border-radius:16px;border:1px solid var(--line-soft);background:var(--panel);color:var(--txt);text-decoration:none;transition:border-color .18s,box-shadow .18s}
+      .social-btn .sic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;flex:none}
+      .social-btn .sic svg{width:27px;height:27px;stroke:#fff}
+      .social-btn .stxt{min-width:0}
+      .social-btn b{display:block;font-size:18.5px;line-height:1.15}
+      .social-btn small{display:block;color:var(--muted);font-size:14px;margin-top:2px}
+      .social-btn:hover{border-color:var(--neon);box-shadow:0 0 14px rgba(56,182,255,.25)}
+      .sic.ig{background:linear-gradient(135deg,#f9ce34,#ee2a7b 55%,#6228d7)}
+      .sic.wa{background:#22b358}
+      .sic.yt{background:#e62117}
+      .sic.tt{background:#161823;border:1px solid rgba(140,210,255,.45)}
+      .panel-note{color:var(--muted);font-size:15px;line-height:1.5;margin:0 0 12px}
+      .panel-note b{color:var(--txt)}
+      .tone-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;font-weight:700}
+      .tone-btn{border-radius:999px;padding:8px 16px;border:1px solid var(--line);background:rgba(6,18,40,.8);color:var(--txt);font-weight:700;font-size:15px}
+      .tone-btn.sel{border-color:var(--neon);background:linear-gradient(90deg,#256df0,#14479e);color:#fff;box-shadow:0 0 10px rgba(37,120,246,.4)}
+      .result-box{background:rgba(4,12,28,.85);border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-size:16px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
+      .net-line{margin:10px 0 0;font-weight:700;color:var(--cyan);font-size:15.5px}
+      @media (max-width:760px){.social-grid{grid-template-columns:1fr 1fr}.social-btn{padding:14px}}
+
       /* ---------- Settings ---------- */
       .set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;align-items:start}
       .set-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-soft)}
@@ -589,6 +611,9 @@
                   <button class="chip" data-cmd="Robô, abre o YouTube"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="m10.5 9.5 5 2.5-5 2.5z" fill="currentColor"/></svg>Abrir YouTube</button>
                   <button class="chip" data-cmd="Robô, faz uma pesquisa sobre inteligência artificial"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4.6-4.6"/></svg>Fazer uma pesquisa</button>
                   <button class="chip" data-cmd="Robô, enviar uma mensagem"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.5L3 20l1-5.4A8.5 8.5 0 1 1 21 11.5z"/></svg>Enviar mensagem</button>
+                  <button class="chip" data-cmd="Robô, abre o Instagram"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.2 6.8h.01"/></svg>Abrir Instagram</button>
+                  <button class="chip" data-cmd="Robô, cria uma legenda"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><path d="M6 16.5 16.8 5.7a2.1 2.1 0 0 1 3 3L9 19.5l-3.4.7L6 16.5z"/></svg>Criar legenda</button>
+                  <button class="chip" data-cmd="Robô, escreve uma resposta"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17l-5-5 5-5"/><path d="M4 12h9a7 7 0 0 1 7 7v1"/></svg>Escrever resposta</button>
                 </div>
               </div>
 
@@ -713,6 +738,24 @@
             <h2><span>Ferramentas</span></h2>
             <p>Atalhos rápidos que o robô executa para você. Ações sensíveis, como enviar mensagens, sempre pedem sua confirmação antes.</p>
           </div>
+          <div class="social-grid">
+            <a class="social-btn" href="https://www.instagram.com" target="_blank" rel="noopener">
+              <span class="sic ig"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.2 6.8h.01"/></svg></span>
+              <span class="stxt"><b>Instagram</b><small>Abrir o Instagram</small></span>
+            </a>
+            <a class="social-btn" href="https://web.whatsapp.com" target="_blank" rel="noopener">
+              <span class="sic wa"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.5L3 20l1-5.4A8.5 8.5 0 1 1 21 11.5z"/></svg></span>
+              <span class="stxt"><b>WhatsApp</b><small>Abrir o WhatsApp</small></span>
+            </a>
+            <a class="social-btn" href="https://www.youtube.com" target="_blank" rel="noopener">
+              <span class="sic yt"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="m10.5 9.5 5 2.5-5 2.5z" fill="currentColor"/></svg></span>
+              <span class="stxt"><b>YouTube</b><small>Abrir o YouTube</small></span>
+            </a>
+            <a class="social-btn" href="https://www.tiktok.com" target="_blank" rel="noopener">
+              <span class="sic tt"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4v10.8a3.6 3.6 0 1 1-3.6-3.6"/><path d="M14 4c.4 3 2.3 5 5.2 5.4"/></svg></span>
+              <span class="stxt"><b>TikTok</b><small>Abrir o TikTok</small></span>
+            </a>
+          </div>
           <div class="tools-grid">
             <button class="tool" data-tool="youtube">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="m10.5 9.5 5 2.5-5 2.5z" fill="currentColor"/></svg>
@@ -720,7 +763,15 @@
             </button>
             <button class="tool" data-tool="whats">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.5L3 20l1-5.4A8.5 8.5 0 1 1 21 11.5z"/></svg>
-              <h3>Enviar mensagem</h3><p>Prepara uma mensagem no WhatsApp — só envia com sua confirmação.</p>
+              <h3>Enviar WhatsApp</h3><p>Diga para quem e qual a mensagem — o robô prepara tudo e só abre com sua confirmação.</p>
+            </button>
+            <button class="tool" data-tool="reply">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17l-5-5 5-5"/><path d="M4 12h9a7 7 0 0 1 7 7v1"/></svg>
+              <h3>Escrever resposta</h3><p>Cole a mensagem que você recebeu, escolha o tom e copie a resposta pronta.</p>
+            </button>
+            <button class="tool" data-tool="caption">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><path d="M6 16.5 16.8 5.7a2.1 2.1 0 0 1 3 3L9 19.5l-3.4.7L6 16.5z"/></svg>
+              <h3>Criar legenda de post</h3><p>Descreva o post e receba a legenda com hashtags e a rede sugerida.</p>
             </button>
             <button class="tool" data-tool="doc">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg>
@@ -759,6 +810,49 @@
             <div class="row" style="margin-top:10px">
               <button class="btn primary" id="docDownload">Baixar documento</button>
               <button class="btn ghost" id="docClose">Fechar</button>
+            </div>
+          </div>
+
+          <div class="panel tool-form" id="replyPanel" style="display:none">
+            <h2>ESCREVER RESPOSTA</h2>
+            <p class="panel-note">Escreva ou cole a mensagem que você recebeu, escolha o tom e eu escrevo uma resposta pronta em português para você copiar e colar onde quiser.</p>
+            <div class="row">
+              <textarea id="replyInput" rows="3" placeholder="Mensagem que você recebeu… Ex.: Oi, quanto custa um topo de bolo personalizado?"></textarea>
+            </div>
+            <div class="tone-row" id="toneRow">
+              <span>Tom da resposta:</span>
+              <button class="tone-btn sel" type="button" data-tone="educado">Educado</button>
+              <button class="tone-btn" type="button" data-tone="animado">Animado</button>
+              <button class="tone-btn" type="button" data-tone="formal">Formal</button>
+            </div>
+            <div class="row" style="margin-top:12px">
+              <button class="btn primary" id="replyGen">Escrever resposta</button>
+              <button class="btn ghost" id="replyClose">Fechar</button>
+            </div>
+            <div id="replyResultWrap" style="display:none;margin-top:14px">
+              <div class="result-box" id="replyResult"></div>
+              <div class="row" style="margin-top:10px">
+                <button class="btn" id="replyCopy">Copiar resposta</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel tool-form" id="captionPanel" style="display:none">
+            <h2>CRIAR LEGENDA DE POST</h2>
+            <p class="panel-note">Descreva o post — por exemplo, <b>“foto do topo de bolo da Laura”</b> — e eu gero a legenda com hashtags e digo em qual rede combina postar. <b>A publicação final é feita por você no aplicativo da rede social, ou peça para a Lua aqui no chat, que ela posta para você.</b></p>
+            <div class="row">
+              <textarea id="captionInput" rows="2" placeholder="Descreva o post… Ex.: foto do topo de bolo da Laura"></textarea>
+            </div>
+            <div class="row" style="margin-top:10px">
+              <button class="btn primary" id="captionGen">Criar legenda</button>
+              <button class="btn ghost" id="captionClose">Fechar</button>
+            </div>
+            <div id="captionResultWrap" style="display:none;margin-top:14px">
+              <div class="result-box" id="captionResult"></div>
+              <p class="net-line" id="captionNetwork"></p>
+              <div class="row" style="margin-top:10px">
+                <button class="btn" id="captionCopy">Copiar legenda</button>
+              </div>
             </div>
           </div>
 
@@ -822,6 +916,8 @@
                 <li><b>Os apps gerados são arquivos HTML de verdade:</b> abra no celular ou no computador, sem instalar nada. Para virar app Android/iOS de loja, o projeto precisa ser empacotado com ferramentas como Expo/React Native.</li>
                 <li><b>Depende de configuração externa:</b> uma IA conversacional completa (API de modelo de linguagem), banco de dados e login (ex.: Supabase) e um servidor Node.js para guardar projetos entre aparelhos e proteger chaves de API.</li>
                 <li><b>Projetos desta sessão</b> ficam na memória da página: baixe os arquivos dos apps para guardá-los de forma permanente.</li>
+                <li><b>Novos poderes sociais:</b> o robô abre Instagram, WhatsApp, YouTube e TikTok, prepara mensagens de WhatsApp para o contato que você indicar (sempre com o cartão de confirmação antes de abrir), escreve respostas prontas no tom que você escolher e cria legendas de post com hashtags.</li>
+                <li><b>O que ele não faz sozinho:</b> publicar nas redes sociais e criar imagens. Este aplicativo abre os apps e prepara mensagens, respostas e legendas — mas a publicação final é feita por você no aplicativo da rede social, e publicar e criar imagens são feitos com a ajuda da <b>Lua aqui no chat</b>.</li>
               </ul>
             </div>
           </div>
@@ -1327,6 +1423,119 @@
          ================================================================ */
       let pendingCreate = null;
       let pendingWhats = null;
+      let pendingReply = null;
+      let pendingCaption = false;
+
+      /* ---------------- WhatsApp: destinatário e número ---------------- */
+      function normalizePhone(d) {
+        if ((d.length === 10 || d.length === 11) && d.indexOf("55") !== 0) return "55" + d;
+        return d;
+      }
+      function fmtPhone(d) {
+        const local = (d.indexOf("55") === 0 && d.length > 11) ? d.slice(2) : d;
+        if (local.length === 11) return "(" + local.slice(0, 2) + ") " + local.slice(2, 7) + "-" + local.slice(7);
+        if (local.length === 10) return "(" + local.slice(0, 2) + ") " + local.slice(2, 6) + "-" + local.slice(6);
+        return d;
+      }
+      function applyRecipient(w, rawText) {
+        const d = (rawText || "").replace(/\D/g, "");
+        if (d.length >= 10) { w.digits = normalizePhone(d); w.label = fmtPhone(w.digits); }
+        else {
+          const nm = (rawText || "").replace(/^(o|a|para|pro|pra|um|uma)\s+/i, "").replace(/[.!?]+$/, "").trim();
+          w.name = cap(nm); w.label = w.name;
+        }
+      }
+      function startWhatsFlow(recipientRaw) {
+        pendingWhats = { stage: "askWho" };
+        if (recipientRaw) {
+          applyRecipient(pendingWhats, recipientRaw);
+          if (pendingWhats.digits) {
+            pendingWhats.stage = "askText";
+            robotSay("Vou mandar um WhatsApp para " + pendingWhats.label + ". Qual é a mensagem?");
+          } else if (pendingWhats.name) {
+            pendingWhats.stage = "askNumber";
+            robotSay("Vou mandar um WhatsApp para " + pendingWhats.name + ". Me passa o número com DDD — por exemplo, 81 99341-9396.");
+          } else {
+            robotSay("Claro! Para quem você quer mandar o WhatsApp? Me fala o nome ou o número com DDD.");
+          }
+        } else {
+          robotSay("Claro! Para quem você quer mandar o WhatsApp? Me fala o nome ou o número com DDD.");
+        }
+        setState("idle", "curious");
+      }
+
+      /* ---------------- Escrever resposta ---------------- */
+      function generateReply(received, tone) {
+        const m = norm(received);
+        let core;
+        if (/quanto|preco|valor|custa|orcamento|tabela/.test(m)) core = "os valores variam conforme o modelo e os detalhes que você escolher. Me conta o que você imaginou — tema, nome e a data da festa — que eu te passo o orçamento certinho, sem compromisso";
+        else if (/obrigad|amei|lind|perfeit|maravilhos|gostei|adorei/.test(m)) core = "fico muito feliz que você tenha gostado! Foi feito com muito carinho. Quando precisar de outra criação, é só me chamar";
+        else if (/atras|problema|erro|errado|ruim|reclam|defeito|troca/.test(m)) core = "me desculpe pelo transtorno! Vou verificar o que aconteceu e já te dou um retorno com a solução. Obrigada por me avisar";
+        else if (/prazo|demora|quando fica|quando entrega|tempo/.test(m)) core = "o prazo depende do modelo escolhido, mas te passo a data exata assim que você confirmar os detalhes do pedido. Pode deixar que eu te mantenho informada";
+        else if (/quero|encomend|pedido|reserv|comprar/.test(m)) core = "que ótimo! Para eu anotar seu pedido, me passa o tema, o nome (se for personalizado) e a data que você precisa. Assim já deixo tudo reservado para você";
+        else if (/^(oi|ola|bom dia|boa tarde|boa noite|ei)\b/.test(m)) core = "que bom falar com você! Como posso te ajudar hoje? Trabalho com topos de bolo personalizados, convites animados, logos e vídeos — é só me contar o que você precisa";
+        else if (/\?/.test(received)) core = "obrigada pela sua pergunta! Me dá só um instante que já te passo todos os detalhes com carinho. Se quiser adiantar, me conta o tema e a data do que você precisa";
+        else core = "recebi sua mensagem, muito obrigada! Já vou te atender com todo o carinho. Se puder, me conta mais detalhes do que você precisa para eu te ajudar rapidinho";
+        const openers = {
+          educado: "Olá! Tudo bem? ",
+          animado: "Oii! Tudo bem por aí? ",
+          formal: "Olá, tudo bem? Agradeço o seu contato. "
+        };
+        const closers = {
+          educado: " Qualquer dúvida, estou à disposição!",
+          animado: " Vai ficar lindo, você vai ver!",
+          formal: " Fico à disposição para qualquer esclarecimento. Atenciosamente, JMS Mídias."
+        };
+        return (openers[tone] || openers.educado) + cap(core) + (closers[tone] || closers.educado);
+      }
+
+      /* ---------------- Criar legenda ---------------- */
+      function generateCaption(descRaw) {
+        const d = norm(descRaw);
+        let name = "";
+        const nm = descRaw.match(/(?:da|do|de)\s+([A-ZÀ-Ú][a-zà-ú]+)/);
+        if (nm) name = nm[1];
+        let emoji = "✨", subject = "criação personalizada saindo por aqui", network = "Instagram";
+        let tags = ["#personalizados", "#feitocomcarinho", "#encomendasabertas"];
+        if (/topo de bolo|topper|bolo/.test(d)) {
+          subject = "topo de bolo personalizado" + (name ? " da " + name : "") + " saindo por aqui"; emoji = "🎂";
+          tags = ["#topodebolo", "#topodebolopersonalizado", "#topperdebolo", "#festapersonalizada", "#aniversarioinfantil"];
+        } else if (/convite/.test(d)) {
+          subject = "convite animado" + (name ? " da " + name : "") + " prontinho"; emoji = "💌";
+          tags = ["#conviteanimado", "#convitedigital", "#convitepersonalizado", "#festa"];
+          network = "Instagram e TikTok";
+        } else if (/logo|logotipo|logomarca/.test(d)) {
+          subject = "logo novinha criada com muito carinho"; emoji = "👑";
+          tags = ["#logopersonalizada", "#identidadevisual", "#logomarca", "#empreendedora"];
+        } else if (/video|mininovela|novelinha|reels/.test(d)) {
+          subject = "vídeo personalizado novinho por aqui"; emoji = "🎬";
+          tags = ["#videopersonalizado", "#mininovelinha", "#reels", "#tiktokbrasil"];
+          network = "TikTok e Instagram (Reels)";
+        } else if (/natal/.test(d)) {
+          subject = "criação de Natal cheia de encanto por aqui"; emoji = "🎄";
+          tags = ["#natal", "#topodenatal", "#festadenatal", "#personalizados"];
+        } else if (/foto|post|divulg/.test(d)) {
+          subject = "novidade linda da JMS Mídias por aqui"; emoji = "📸";
+          tags = ["#personalizados", "#novidade", "#feitocomcarinho"];
+        }
+        const text = emoji + " " + cap(subject) + "!\n\nCada detalhe é feito sob encomenda, do jeitinho que você sonhou. 💖\n\n📩 Encomendas abertas! Chama no WhatsApp e peça o seu.\n\n" + tags.join(" ") + " #JMSMídias";
+        return { text: text, network: network };
+      }
+
+      /* ---------------- Copiar texto ---------------- */
+      function copyText(txt, okMsg) {
+        const done = () => toast(okMsg || "Copiado!");
+        function fallback() {
+          const ta = document.createElement("textarea");
+          ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0";
+          document.body.appendChild(ta); ta.select();
+          try { document.execCommand("copy"); done(); }
+          catch (e) { toast("Não consegui copiar sozinho — segure o texto e copie manualmente."); }
+          ta.remove();
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done).catch(fallback);
+        else fallback();
+      }
 
       function askFeatures(type, name, idea) {
         pendingCreate = { type, name, idea };
@@ -1350,13 +1559,77 @@
           }
           pendingCreate = null;
         }
-        if (pendingWhats && pendingWhats.stage === "askText") {
-          pendingWhats = { stage: "confirm", text };
-          setState("auth");
-          robotSay("Vou preparar a mensagem: “" + text + "”. Posso abrir o WhatsApp com ela pronta?");
-          addConfirmCard("Enviar pelo WhatsApp a mensagem: “" + text + "”?",
-            () => { window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank"); setState("idle"); robotSay("Abri o WhatsApp com a mensagem pronta. É só escolher o contato e tocar em enviar lá."); pendingWhats = null; },
-            () => { setState("idle"); robotSay("Tudo bem, cancelei o envio. A mensagem não foi enviada."); pendingWhats = null; });
+        if (pendingWhats) {
+          const w = pendingWhats;
+          const tn = norm(text);
+          if (w.stage !== "askText" && /^(cancela|cancelar|esquece|deixa pra la|para)$/.test(tn)) {
+            pendingWhats = null; setState("idle");
+            robotSay("Tudo bem, cancelei. Não enviei nada.");
+            return;
+          }
+          if (w.stage === "askWho") {
+            applyRecipient(w, text);
+            if (w.digits) { w.stage = "askText"; robotSay("Perfeito! E qual é a mensagem que você quer enviar para " + w.label + "?"); }
+            else { w.stage = "askNumber"; robotSay("Anotei: " + w.name + ". Agora me passa o número com DDD — por exemplo, 81 99341-9396."); }
+            setState("idle", "curious");
+            return;
+          }
+          if (w.stage === "askNumber") {
+            const d = text.replace(/\D/g, "");
+            if (d.length >= 10) {
+              w.digits = normalizePhone(d);
+              w.label = w.name ? w.name + " (" + fmtPhone(w.digits) + ")" : fmtPhone(w.digits);
+              w.stage = "askText";
+              robotSay("Número anotado! E qual é a mensagem para " + w.label + "?");
+            } else {
+              robotSay("Hmm, esse número parece incompleto. Me passa o número com DDD — DDD + número, tipo 81 99341-9396.");
+            }
+            setState("idle", "curious");
+            return;
+          }
+          if (w.stage === "askText") {
+            pendingWhats = null;
+            setState("auth");
+            robotSay("Mensagem pronta! Confirma aqui embaixo para eu abrir o WhatsApp.");
+            addConfirmCard("Enviar WhatsApp para " + w.label + " com a mensagem: “" + text + "”?",
+              () => { window.open("https://wa.me/" + w.digits + "?text=" + encodeURIComponent(text), "_blank"); setState("idle"); robotSay("Abri o WhatsApp com a mensagem pronta para " + w.label + ". É só tocar em enviar lá no WhatsApp."); },
+              () => { setState("idle"); robotSay("Tudo bem, cancelei. A mensagem não foi enviada."); });
+            return;
+          }
+        }
+        if (pendingReply) {
+          const pr = pendingReply;
+          if (/^(cancela|cancelar|esquece|deixa pra la)$/.test(norm(text))) {
+            pendingReply = null; setState("idle");
+            robotSay("Tudo bem, cancelei. Não escrevi nada.");
+            return;
+          }
+          if (pr.stage === "askMsg") {
+            pr.msg = text; pr.stage = "askTone";
+            robotSay("Entendi a mensagem: “" + text + "”. Agora escolhe o tom da resposta: educado, animado ou formal?");
+            setState("idle", "curious");
+            return;
+          }
+          const tt = norm(text);
+          pr.tone = /animad|alegr|descontraid/.test(tt) ? "animado" : (/formal|serio|profissional/.test(tt) ? "formal" : "educado");
+          pendingReply = null;
+          const reply = generateReply(pr.msg, pr.tone);
+          showView("ferramentas");
+          showReplyPanel(pr.msg, pr.tone, reply);
+          robotSay("Escrevi sua resposta no tom " + pr.tone + " — ela está na aba Ferramentas, com botão de copiar: “" + reply + "”");
+          return;
+        }
+        if (pendingCaption) {
+          pendingCaption = false;
+          if (/^(cancela|cancelar|esquece|deixa pra la)$/.test(norm(text))) {
+            setState("idle");
+            robotSay("Tudo bem, cancelei a legenda.");
+            return;
+          }
+          const c = generateCaption(text);
+          showView("ferramentas");
+          showCaptionPanel(text, c);
+          robotSay("Legenda pronta! Ela está na aba Ferramentas, com as hashtags, a rede sugerida (" + c.network + ") e o botão de copiar. Lembrando: a publicação final é feita no aplicativo da rede social ou com a ajuda da Lua aqui no chat.");
           return;
         }
 
@@ -1372,7 +1645,7 @@
           robotSay("Eu sou o Robô Criador IA, seu assistente esférico: eu falo, entendo sua voz, crio aplicativos de verdade com código e prévia, faço pesquisas, abro páginas e organizo lembretes. É só pedir!", "happy"); return;
         }
         if (/o que voce (pode|sabe) fazer|o que voce faz|suas funcoes|ajuda|me ajuda/.test(t)) {
-          robotSay("Eu posso: criar aplicativos e sites por comando de voz (com código, teste e download), abrir o YouTube e páginas, fazer pesquisas, preparar mensagens no WhatsApp com sua confirmação, criar documentos, lembrar você de tarefas e corrigir erros dos apps que criei. Experimente: “Robô, cria um jogo de corrida”."); return;
+          robotSay("Eu posso: criar aplicativos e sites por comando de voz (com código, teste e download), abrir o Instagram, o WhatsApp, o YouTube e o TikTok, preparar mensagens de WhatsApp com sua confirmação, escrever respostas prontas para suas clientes, criar legendas de post com hashtags, fazer pesquisas, criar documentos e organizar lembretes. Experimente: “Robô, cria uma legenda”."); return;
         }
         if (/que horas|horas sao|que dia (e|eh) hoje|data de hoje/.test(t)) {
           const d = new Date();
@@ -1382,6 +1655,26 @@
         if (/obrigad/.test(t)) { robotSay("Por nada! É um prazer ajudar. Se precisar de mais alguma coisa, é só chamar.", "happy"); return; }
         if (/piada|me faz rir/.test(t)) { robotSay("Por que o robô foi ao médico? Porque ele estava com um vírus… de computador! Espero ter arrancado um sorriso. Quer criar alguma coisa agora?", "happy"); return; }
 
+        if (/legenda/.test(t)) {
+          const desc = original.replace(/^.*?legenda\s*(para|pra|pro|do|da|de|sobre)?\s*/i, "").trim();
+          if (desc.length >= 4) {
+            const c = generateCaption(desc);
+            showView("ferramentas");
+            showCaptionPanel(desc, c);
+            robotSay("Legenda pronta! Ela está na aba Ferramentas, com as hashtags, a rede sugerida (" + c.network + ") e o botão de copiar. Lembrando: a publicação final é feita no aplicativo da rede social ou com a ajuda da Lua aqui no chat.");
+          } else {
+            pendingCaption = true;
+            robotSay("Vamos criar a legenda! Me conta: é foto ou vídeo de quê? Por exemplo: “foto do topo de bolo da Laura”.");
+            setState("idle", "curious");
+          }
+          return;
+        }
+        if ((/escrev|redig|elabor/.test(t) && /resposta/.test(t)) || /\bresponder\b/.test(t)) {
+          pendingReply = { stage: "askMsg" };
+          robotSay("Deixa comigo! Me manda a mensagem que você recebeu — pode ditar ou digitar — e depois você escolhe o tom: educado, animado ou formal.");
+          setState("idle", "curious");
+          return;
+        }
         if (/\b(cria|criar|crie|faz|fazer|faca|desenvolve|desenvolver|monta|montar|constroi|gerar|gera)\b/.test(t) && /\b(aplicativo|app|site|jogo|pagina|sistema|loja|delivery|calculadora)\b/.test(t)) {
           const type = detectType(t);
           const name = extractName(t, type);
@@ -1441,10 +1734,13 @@
           else go();
           return;
         }
-        if (/\b(envia|enviar|manda|mandar)\b/.test(t) || (/mensagem/.test(t) && /whats|zap|envia|manda/.test(t))) {
-          pendingWhats = { stage: "askText" };
-          robotSay("Claro! O que você quer escrever na mensagem? Fale ou digite o texto — antes de abrir o WhatsApp, eu peço sua confirmação.");
-          setState("idle", "curious"); return;
+        if (/\b(envia|enviar|envie|manda|mandar|mande)\b/.test(t) || (/mensagem/.test(t) && /whats|zap/.test(t))) {
+          let rec = "";
+          const m = original.match(/para\s+(.+)$/i);
+          if (m) rec = m[1].replace(/[.!?]+$/, "").trim();
+          if (/^(um|uma)$/i.test(rec)) rec = "";
+          startWhatsFlow(rec || null);
+          return;
         }
         if (/lembrete|me lembra|lembrar/.test(t)) {
           const txt = original.replace(/.*?(lembrete|lembrar|lembra)\s*(de|pra|para)?\s*/i, "") || original;
@@ -1503,6 +1799,8 @@
         const k = b.dataset.tool;
         if (k === "youtube") handleCommand("Robô, abre o YouTube");
         if (k === "whats") handleCommand("Robô, enviar uma mensagem no WhatsApp");
+        if (k === "reply") { $("#replyPanel").style.display = "block"; $("#replyPanel").scrollIntoView({ behavior: "smooth" }); }
+        if (k === "caption") { $("#captionPanel").style.display = "block"; $("#captionPanel").scrollIntoView({ behavior: "smooth" }); }
         if (k === "doc") { $("#docPanel").style.display = "block"; $("#docPanel").scrollIntoView({ behavior: "smooth" }); }
         if (k === "fix") handleCommand("Robô, corrige os erros do meu aplicativo");
         if (k === "continue") handleCommand("Robô, continua o meu projeto");
@@ -1524,6 +1822,47 @@
         download(fileName(title) + ".html", html);
         robotSay("Documento “" + title + "” criado e baixado. Ele abre em qualquer navegador ou editor de texto.");
       });
+
+      /* ---------------- Painéis: resposta e legenda ---------------- */
+      let replyTone = "educado";
+      let currentReply = "", currentCaption = "";
+      $$("#toneRow .tone-btn").forEach(b => b.addEventListener("click", () => {
+        $$("#toneRow .tone-btn").forEach(x => x.classList.remove("sel"));
+        b.classList.add("sel"); replyTone = b.dataset.tone;
+      }));
+      function showReplyPanel(msg, tone, reply) {
+        $("#replyPanel").style.display = "block";
+        $("#replyInput").value = msg;
+        replyTone = tone || "educado";
+        $$("#toneRow .tone-btn").forEach(x => x.classList.toggle("sel", x.dataset.tone === replyTone));
+        currentReply = reply;
+        $("#replyResult").textContent = reply;
+        $("#replyResultWrap").style.display = "block";
+      }
+      function showCaptionPanel(desc, c) {
+        $("#captionPanel").style.display = "block";
+        $("#captionInput").value = desc;
+        currentCaption = c.text;
+        $("#captionResult").textContent = c.text;
+        $("#captionNetwork").textContent = "Rede sugerida para postar: " + c.network;
+        $("#captionResultWrap").style.display = "block";
+      }
+      $("#replyGen").addEventListener("click", () => {
+        const msg = $("#replyInput").value.trim();
+        if (!msg) { toast("Escreva primeiro a mensagem que você recebeu."); $("#replyInput").focus(); return; }
+        showReplyPanel(msg, replyTone, generateReply(msg, replyTone));
+        toast("Resposta pronta no tom " + replyTone + "! Toque em “Copiar resposta”.");
+      });
+      $("#replyCopy").addEventListener("click", () => { if (currentReply) copyText(currentReply, "Resposta copiada! Agora é só colar e enviar."); });
+      $("#replyClose").addEventListener("click", () => { $("#replyPanel").style.display = "none"; });
+      $("#captionGen").addEventListener("click", () => {
+        const desc = $("#captionInput").value.trim();
+        if (!desc) { toast("Descreva o post primeiro — ex.: foto do topo de bolo da Laura."); $("#captionInput").focus(); return; }
+        showCaptionPanel(desc, generateCaption(desc));
+        toast("Legenda pronta! Toque em “Copiar legenda”.");
+      });
+      $("#captionCopy").addEventListener("click", () => { if (currentCaption) copyText(currentCaption, "Legenda copiada! Agora é só colar no aplicativo da rede social."); });
+      $("#captionClose").addEventListener("click", () => { $("#captionPanel").style.display = "none"; });
 
       /* ---------------- Configurações ---------------- */
       $("#setVoice").addEventListener("change", e => { settings.voice = e.target.checked; $("#soundToggle").classList.toggle("off", !settings.voice); if (!settings.voice && "speechSynthesis" in window) speechSynthesis.cancel(); });
